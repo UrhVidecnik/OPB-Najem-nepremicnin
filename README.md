@@ -12,4 +12,4 @@ V okviru projekta bova zasnovala relacijsko podatkovno bazo z ustreznim ER diagr
 Cilj projekta je prikazati smiselno uporabo relacijskih baz, SQL poizvedb in osnovne spletne aplikacije nad podatkovno bazo.
 
 ## ER-diagram
-!(er-nepremicnine.drawio.png)
+![](er-nepremicnine.drawio.png)
