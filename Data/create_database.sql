@@ -1,0 +1,1 @@
+-- Ta datoteka vsebuje vse potrebne CREATE ukaze s katerimi lahko ustvarimo bazo od začetka.
