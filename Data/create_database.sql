@@ -2,6 +2,7 @@
 -- In pa dovoljenje za Jureta, da lahko upravlja z bazo.
 
 GRANT ALL ON DATABASE sem2026_urhvid TO jurekr WITH GRANT OPTION;
+GRANT CONNECT ON DATABASE sem2026_urhvid TO jurekr;
 
 CREATE TABLE IF NOT EXISTS vir (
     id_vira SERIAL PRIMARY KEY,

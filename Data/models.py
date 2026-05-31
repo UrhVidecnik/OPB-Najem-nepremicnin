@@ -7,7 +7,6 @@ from datetime import date
 
 @dataclass_json
 @dataclass
-
 class Vir:
     id_vira: Optional[int] = field(default=None)
     ime_vira: str = field(default="")
