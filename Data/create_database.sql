@@ -1,4 +1,7 @@
 -- Ta datoteka vsebuje vse potrebne CREATE ukaze s katerimi lahko ustvarimo bazo od začetka.
+-- In pa dovoljenje za Jureta, da lahko upravlja z bazo.
+
+GRANT ALL ON DATABASE sem2026_urhvid TO jurekr WITH GRANT OPTION;
 
 CREATE TABLE IF NOT EXISTS vir (
     id_vira SERIAL PRIMARY KEY,
