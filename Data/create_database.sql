@@ -2,21 +2,21 @@
 
 CREATE TABLE IF NOT EXISTS vir (
     id_vira SERIAL PRIMARY KEY,
-    ime_vira VARCHAR(100) NOT NULL,
+    ime_vira TEXT NOT NULL,
     url_vira TEXT
 );
 
 CREATE TABLE IF NOT EXISTS vrsta_nepremicnine (
     id_vrste SERIAL PRIMARY KEY,
-    ime_vrste VARCHAR(100) NOT NULL UNIQUE
+    ime_vrste TEXT NOT NULL UNIQUE
 );
 
 CREATE TABLE IF NOT EXISTS lokacija (
     id_lokacije SERIAL PRIMARY KEY,
-    ime VARCHAR(100) NOT NULL,
-    regija VARCHAR(100),
-    soseska VARCHAR(100),
-    postna_stevilka VARCHAR(10)
+    ime TEXT NOT NULL,
+    regija TEXT,
+    soseska TEXT,
+    postna_stevilka INTEGER
 );
 
 CREATE TABLE IF NOT EXISTS nepremicnina (
@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS nepremicnina (
     opis TEXT,
     leto_gradnje INTEGER,
     stevilo_sob NUMERIC(4,1),
-    nadstropje VARCHAR(30),
+    nadstropje INTEGER,
     m2 NUMERIC(10,2) NOT NULL,
 
     CONSTRAINT fk_nepremicnina_vrsta
@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS oglas (
     id_oglasa SERIAL PRIMARY KEY,
     id_vira INTEGER NOT NULL,
     id_nepremicnine INTEGER NOT NULL,
-    naslov VARCHAR(255) NOT NULL,
+    naslov TEXT NOT NULL,
     url_oglasa TEXT,
     cena NUMERIC(12,2) NOT NULL,
     datum_objave DATE,
