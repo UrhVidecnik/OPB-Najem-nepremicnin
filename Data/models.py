@@ -88,11 +88,23 @@ class OglasDTO:
     vir: Vir = field(default_factory=Vir)
 
 
+
 @dataclass
-class OglasFiltri:
+class OglasFiltriDTO:
     id_vrste: Optional[int] = field(default=None)
     id_lokacije: Optional[int] = field(default=None)
     cena_min: Optional[float] = field(default=None)
     cena_max: Optional[float] = field(default=None)
     m2_min: Optional[float] = field(default=None)
     m2_max: Optional[float] = field(default=None)
+
+
+
+@dataclass_json
+@dataclass
+class StatisticsDTO:
+    povprecna_cena: float
+    mediana_cena: float
+    minimalna_cena: float
+    maksimalna_cena: float
+    stevilo_oglasov: int
