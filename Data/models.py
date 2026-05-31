@@ -108,3 +108,8 @@ class StatisticsDTO:
     minimalna_cena: float
     maksimalna_cena: float
     stevilo_oglasov: int
+    povprecna_m2: float
+    skupna_povrsina_m2: float
+    povprecna_cena_na_m2: float
+    minimalna_cena_na_m2: float
+    maksimalna_cena_na_m2: float
