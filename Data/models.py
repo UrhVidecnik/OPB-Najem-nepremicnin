@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 from dataclasses_json import dataclass_json
 from typing import Optional
-from datetime import datetime
+from datetime import date
 
 # Definiramo podatokvne modele, ki jih bomo uporabljali
 
@@ -12,7 +12,6 @@ class Vir:
     id_vira: Optional[int] = field(default=None)
     ime_vira: str = field(default="")
     url_vira: Optional[str] = field(default=None)
-
 
 
 
@@ -38,14 +37,14 @@ class Lokacija:
 @dataclass_json
 @dataclass
 class Nepremicnina:
-    id: Optional[int] = field(default=None)
+    id_nepremicnine: Optional[int] = field(default=None)
     id_vrste: int = field(default=0)
     id_lokacije: int = field(default=0)
 
     opis: Optional[str] = field(default=None)
     leto_gradnje: Optional[int] = field(default=None)
     stevilo_sob: Optional[float] = field(default=None)
-    nadstropje: Optional[int] = field(default=None)
+    nadstropje: Optional[str] = field(default=None)
     m2: float = field(default=0.0)
 
     def __post_init__(self):
@@ -60,10 +59,11 @@ class Nepremicnina:
             raise ValueError("Število_sob mora biti > 0")
 
 
+
 @dataclass_json
 @dataclass
 class Oglas:
-    id: Optional[int] = field(default=None)
+    id_oglasa: Optional[int] = field(default=None)
     id_vira: int = field(default=0)
     id_nepremicnine: int = field(default=0)
 
@@ -87,3 +87,12 @@ class OglasDTO:
     vrsta: Vrsta_nepremicnine = field(default_factory=Vrsta_nepremicnine)
     vir: Vir = field(default_factory=Vir)
 
+
+@dataclass
+class OglasFiltri:
+    id_vrste: Optional[int] = field(default=None)
+    id_lokacije: Optional[int] = field(default=None)
+    cena_min: Optional[float] = field(default=None)
+    cena_max: Optional[float] = field(default=None)
+    m2_min: Optional[float] = field(default=None)
+    m2_max: Optional[float] = field(default=None)

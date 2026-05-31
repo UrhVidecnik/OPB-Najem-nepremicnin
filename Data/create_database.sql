@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS nepremicnina (
     opis TEXT,
     leto_gradnje INTEGER,
     stevilo_sob NUMERIC(4,1),
-    nadstropje INTEGER,
+    nadstropje VARCHAR(50),
     m2 NUMERIC(10,2) NOT NULL,
 
     CONSTRAINT fk_nepremicnina_vrsta
