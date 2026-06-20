@@ -115,7 +115,6 @@ class Service:
     def _najdi_lokacijo(self, id_lokacije: int):
         return next((l for l in self.repository.list_lokacije() if l.id_lokacije == id_lokacije), None)
 
-
     def get_viri(self) -> List[Vir]:
         """Vrne seznam vseh virov (npr. za spustni seznam pri filtriranju oglasov)."""
         return self.repository.list_viri()
