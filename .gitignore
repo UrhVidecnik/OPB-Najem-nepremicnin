@@ -219,3 +219,24 @@ __marimo__/
 auth.py
 
 Data/auth.py
+
+# Python / okolje
+__pycache__/
+*.py[cod]
+*.log
+.python-version
+.venv/
+.ruff_cache/
+
+# Uporabniške nastavitve
+.env
+.env.*
+!.env.example
+
+# Playwright
+playwright-report/
+test-results/
+
+# OS
+.DS_Store
+Thumbs.db
