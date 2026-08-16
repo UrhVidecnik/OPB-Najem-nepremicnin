@@ -26,6 +26,7 @@ class Repository:
             RETURNING id_vira
             """, (vir.ime_vira, vir.url_vira))
             vir.id_vira = cur.fetchone()["id_vira"]
+            self.conn.commit()
             return vir
 
     def get_vir_by_id(self, id_vira: int) -> Vir | None:
@@ -38,11 +39,41 @@ class Repository:
             return Vir(id_vira=row["id_vira"], ime_vira=row["ime_vira"], url_vira=row.get("url_vira"))
 
 
+    def get_or_add_vir(self, ime_vira: str, url_vira: Optional[str] = None) -> Vir:
+        """Vrne vir po imenu ali ga doda, če ne obstaja."""
+        with self.conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+            cur.execute("SELECT id_vira, ime_vira, url_vira FROM vir WHERE ime_vira = %s", (ime_vira,))
+            row = cur.fetchone()
+            if row:
+                return Vir(id_vira=row["id_vira"], ime_vira=row["ime_vira"], url_vira=row.get("url_vira"))
+            cur.execute(
+                "INSERT INTO vir (ime_vira, url_vira) VALUES (%s, %s) RETURNING id_vira",
+                (ime_vira, url_vira),
+            )
+            new_id = cur.fetchone()["id_vira"]
+            self.conn.commit()
+            return Vir(id_vira=new_id, ime_vira=ime_vira, url_vira=url_vira)
+
     def list_viri(self) -> List[Vir]:
         """Dostop do vseh virov (za dropdown filter)."""
         with self.conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
             cur.execute("SELECT id_vira, ime_vira, url_vira FROM vir ORDER BY ime_vira")
             return [Vir(id_vira=r["id_vira"], ime_vira=r["ime_vira"], url_vira=r.get("url_vira")) for r in cur.fetchall()]
+
+
+    def get_or_add_vrsta(self, ime_vrste: str) -> Vrsta_nepremicnine:
+        with self.conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+            cur.execute("SELECT id_vrste, ime_vrste FROM vrsta_nepremicnine WHERE ime_vrste = %s", (ime_vrste,))
+            row = cur.fetchone()
+            if row:
+                return Vrsta_nepremicnine(id_vrste=row["id_vrste"], ime_vrste=row["ime_vrste"])
+            cur.execute(
+                "INSERT INTO vrsta_nepremicnine (ime_vrste) VALUES (%s) RETURNING id_vrste",
+                (ime_vrste,),
+            )
+            new_id = cur.fetchone()["id_vrste"]
+            self.conn.commit()
+            return Vrsta_nepremicnine(id_vrste=new_id, ime_vrste=ime_vrste)
 
 
     def list_vrste(self) -> List[Vrsta_nepremicnine]:
@@ -61,7 +92,35 @@ class Repository:
             RETURNING id_lokacije
             """, (lok.ime, lok.regija, lok.soseska, lok.postna_stevilka))
             lok.id_lokacije = cur.fetchone()["id_lokacije"]
+            self.conn.commit()
             return lok
+
+
+    def get_or_add_lokacija(self, ime: str, regija: Optional[str] = None,
+                             soseska: Optional[str] = None,
+                             postna_stevilka: Optional[int] = None) -> Lokacija:
+        with self.conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+            cur.execute("""
+                SELECT id_lokacije, ime, regija, soseska, postna_stevilka
+                FROM lokacija
+                WHERE ime = %s
+                  AND regija IS NOT DISTINCT FROM %s
+                  AND soseska IS NOT DISTINCT FROM %s
+            """, (ime, regija, soseska))
+            row = cur.fetchone()
+            if row:
+                return Lokacija(
+                    id_lokacije=row["id_lokacije"], ime=row["ime"], regija=row.get("regija"),
+                    soseska=row.get("soseska"), postna_stevilka=row.get("postna_stevilka"),
+                )
+            cur.execute("""
+                INSERT INTO lokacija (ime, regija, soseska, postna_stevilka)
+                VALUES (%s, %s, %s, %s) RETURNING id_lokacije
+            """, (ime, regija, soseska, postna_stevilka))
+            new_id = cur.fetchone()["id_lokacije"]
+            self.conn.commit()
+            return Lokacija(id_lokacije=new_id, ime=ime, regija=regija,
+                             soseska=soseska, postna_stevilka=postna_stevilka)
         
 
     def list_lokacije(self) -> List[Lokacija]:
@@ -81,6 +140,7 @@ class Repository:
             RETURNING id_nepremicnine
             """, (n.id_vrste, n.id_lokacije, n.opis, n.leto_gradnje, n.stevilo_sob, n.nadstropje, n.m2))
             n.id_nepremicnine = cur.fetchone()["id_nepremicnine"]
+            self.conn.commit()
             return n
         
     
@@ -93,6 +153,7 @@ class Repository:
             RETURNING id_oglasa
             """, (og.id_vira, og.id_nepremicnine, og.naslov, og.url_oglasa, og.cena, og.datum_objave))
             og.id_oglasa = cur.fetchone()["id_oglasa"]
+            self.conn.commit()
             return og
     
 

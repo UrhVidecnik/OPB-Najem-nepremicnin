@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS lokacija (
     id_lokacije SERIAL PRIMARY KEY,
     ime TEXT NOT NULL,
     regija TEXT,
-    soseska TEXT,
+    obcina TEXT,
     postna_stevilka INTEGER
 );
 
@@ -31,6 +31,7 @@ CREATE TABLE IF NOT EXISTS nepremicnina (
     opis TEXT,
     leto_gradnje INTEGER,
     stevilo_sob NUMERIC(4,1),
+    stevilo_sob_opis VARCHAR(100),
     nadstropje VARCHAR(50),
     m2 NUMERIC(10,2) NOT NULL,
 
