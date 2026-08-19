@@ -28,7 +28,7 @@ class Lokacija:
     id_lokacije: Optional[int] = field(default=None)
     ime: str = field(default="")
     regija: Optional[str] = field(default=None)
-    soseska: Optional[str] = field(default=None)
+    obcina: Optional[str] = field(default=None)
     postna_stevilka: Optional[int] = field(default=None)
 
 
@@ -43,16 +43,13 @@ class Nepremicnina:
     opis: Optional[str] = field(default=None)
     leto_gradnje: Optional[int] = field(default=None)
     stevilo_sob: Optional[float] = field(default=None)
+    stevilo_sob_opis: Optional[str] = field(default=None)
     nadstropje: Optional[str] = field(default=None)
     m2: float = field(default=0.0)
 
     def __post_init__(self):
         if self.m2 <= 0:
-            raise ValueError("m2 mora biti > 0")
-
-        if self.leto_gradnje is not None:
-            if not (1800 <= self.leto_gradnje <= 2100):
-                raise ValueError("Leto_gradnje mora biti med 1800 in 2100")
+            raise ValueError("Površina mora biti > 0")
 
         if self.stevilo_sob is not None and self.stevilo_sob <= 0:
             raise ValueError("Število_sob mora biti > 0")

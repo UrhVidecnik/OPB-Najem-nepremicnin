@@ -1,4 +1,5 @@
 from typing import Optional, List
+from datetime import date
 
 from Data.repository import Repository
 from Data.models import Vir, Vrsta_nepremicnine, Lokacija, Nepremicnina, Oglas, OglasDTO, OglasFiltriDTO, StatisticsDTO
@@ -59,6 +60,7 @@ class Service:
         opis: Optional[str] = None,
         leto_gradnje: Optional[int] = None,
         stevilo_sob: Optional[float] = None,
+        stevilo_sob_opis: Optional[str] = None,
         nadstropje: Optional[str] = None,
     ) -> OglasDTO:
         """
@@ -83,6 +85,7 @@ class Service:
             opis=opis,
             leto_gradnje=leto_gradnje,
             stevilo_sob=stevilo_sob,
+            stevilo_sob_opis=stevilo_sob_opis,
             nadstropje=nadstropje,
             m2=m2,
         )
@@ -111,14 +114,54 @@ class Service:
     
     def _najdi_vrsto(self, id_vrste: int):
         return next((v for v in self.repository.list_vrste() if v.id_vrste == id_vrste), None)
+
  
     def _najdi_lokacijo(self, id_lokacije: int):
         return next((l for l in self.repository.list_lokacije() if l.id_lokacije == id_lokacije), None)
 
+
     def get_viri(self) -> List[Vir]:
         """Vrne seznam vseh virov (npr. za spustni seznam pri filtriranju oglasov)."""
         return self.repository.list_viri()
- 
+
+
+    def get_or_add_vir(self, ime_vira: str, url_vira: Optional[str] = None) -> Vir:
+        """Vrne obstoječi vir po imenu ali ga doda, če še ne obstaja (idempotentno, za uvoz podatkov)."""
+        ime_vira = ime_vira.strip() if ime_vira else None
+        if not ime_vira:
+            raise ValueError("Ime vira ne sme biti prazno")
+        return self.repository.get_or_add_vir(ime_vira, url_vira.strip() if url_vira else None)
+
+
+    def get_or_add_vrsta(self, ime_vrste: str) -> Vrsta_nepremicnine:
+        """Vrne obstoječo vrsto nepremičnine po imenu ali jo doda, če še ne obstaja (idempotentno, za uvoz podatkov)."""
+        ime_vrste = ime_vrste.strip() if ime_vrste else None
+        if not ime_vrste:
+            raise ValueError("Ime vrste ne sme biti prazno")
+        return self.repository.get_or_add_vrsta(ime_vrste)
+
+
+    def get_or_add_lokacija(
+        self,
+        ime: str,
+        regija: Optional[str] = None,
+        obcina: Optional[str] = None,
+        postna_stevilka: Optional[int] = None,
+    ) -> Lokacija:
+        """Vrne obstoječo lokacijo (po ime+regija+obcina) ali jo doda, če še ne obstaja (idempotentno, za uvoz podatkov)."""
+        ime = ime.strip() if ime else None
+        if not ime:
+            raise ValueError("Ime lokacije ne sme biti prazno")
+        if postna_stevilka is not None and not (1000 <= postna_stevilka <= 9999):
+            raise ValueError("Poštna številka mora biti štirimestno število (1000-9999)")
+        return self.repository.get_or_add_lokacija(
+            ime=ime,
+            regija=regija.strip() if regija else None,
+            obcina=obcina.strip() if obcina else None,
+            postna_stevilka=postna_stevilka,
+        )
+
+    
     def get_vir(self, id_vira: int) -> Optional[Vir]:
         if id_vira is None:
             raise ValueError("id_vira je obvezen podatek")
@@ -145,7 +188,7 @@ class Service:
         self,
         ime: str,
         regija: Optional[str] = None,
-        soseska: Optional[str] = None,
+        obcina: Optional[str] = None,
         postna_stevilka: Optional[int] = None,
     ) -> Lokacija:
         """Doda novo lokacijo v bazo."""
@@ -159,7 +202,7 @@ class Service:
         lokacija = Lokacija(
             ime=ime,
             regija=regija.strip() if regija else None,
-            soseska=soseska.strip() if soseska else None,
+            obcina=obcina.strip() if obcina else None,
             postna_stevilka=postna_stevilka,
         )
         return self.repository.add_lokacija(lokacija)

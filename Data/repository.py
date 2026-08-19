@@ -87,63 +87,83 @@ class Repository:
         """Vnos (insert ukaz) nove lokacije v bazo."""
         with self.conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
             cur.execute("""
-            INSERT INTO lokacija (ime, regija, soseska, postna_stevilka)
+            INSERT INTO lokacija (ime, regija, obcina, postna_stevilka)
             VALUES (%s, %s, %s, %s)
             RETURNING id_lokacije
-            """, (lok.ime, lok.regija, lok.soseska, lok.postna_stevilka))
+            """, (lok.ime, lok.regija, lok.obcina, lok.postna_stevilka))
             lok.id_lokacije = cur.fetchone()["id_lokacije"]
             self.conn.commit()
             return lok
 
 
     def get_or_add_lokacija(self, ime: str, regija: Optional[str] = None,
-                             soseska: Optional[str] = None,
+                             obcina: Optional[str] = None,
                              postna_stevilka: Optional[int] = None) -> Lokacija:
         with self.conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
             cur.execute("""
-                SELECT id_lokacije, ime, regija, soseska, postna_stevilka
+                SELECT id_lokacije, ime, regija, obcina, postna_stevilka
                 FROM lokacija
                 WHERE ime = %s
                   AND regija IS NOT DISTINCT FROM %s
-                  AND soseska IS NOT DISTINCT FROM %s
-            """, (ime, regija, soseska))
+                  AND obcina IS NOT DISTINCT FROM %s
+            """, (ime, regija, obcina))
             row = cur.fetchone()
             if row:
                 return Lokacija(
                     id_lokacije=row["id_lokacije"], ime=row["ime"], regija=row.get("regija"),
-                    soseska=row.get("soseska"), postna_stevilka=row.get("postna_stevilka"),
+                    obcina=row.get("obcina"), postna_stevilka=row.get("postna_stevilka"),
                 )
             cur.execute("""
-                INSERT INTO lokacija (ime, regija, soseska, postna_stevilka)
+                INSERT INTO lokacija (ime, regija, obcina, postna_stevilka)
                 VALUES (%s, %s, %s, %s) RETURNING id_lokacije
-            """, (ime, regija, soseska, postna_stevilka))
+            """, (ime, regija, obcina, postna_stevilka))
             new_id = cur.fetchone()["id_lokacije"]
             self.conn.commit()
             return Lokacija(id_lokacije=new_id, ime=ime, regija=regija,
-                             soseska=soseska, postna_stevilka=postna_stevilka)
+                             obcina=obcina, postna_stevilka=postna_stevilka)
         
 
     def list_lokacije(self) -> List[Lokacija]:
         """Dostop do vseh lokacij (za dropdown filter)."""
         with self.conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
-            cur.execute("SELECT id_lokacije, ime, regija, soseska, postna_stevilka FROM lokacija ORDER BY ime")
+            cur.execute("SELECT id_lokacije, ime, regija, obcina, postna_stevilka FROM lokacija ORDER BY ime")
             rows = cur.fetchall()
-            return [Lokacija(id_lokacije=r["id_lokacije"], ime=r["ime"], regija=r.get("regija"), soseska=r.get("soseska"), postna_stevilka=r.get("postna_stevilka")) for r in rows]
+            return [Lokacija(id_lokacije=r["id_lokacije"], ime=r["ime"], regija=r.get("regija"), obcina=r.get("obcina"), postna_stevilka=r.get("postna_stevilka")) for r in rows]
         
     
     def add_nepremicnina(self, n: Nepremicnina) -> Nepremicnina:
         """Vnos (insert ukaz) nove nepremicnine v bazo."""
         with self.conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
             cur.execute("""
-            INSERT INTO nepremicnina (id_vrste, id_lokacije, opis, leto_gradnje, stevilo_sob, nadstropje, m2)
-            VALUES (%s, %s, %s, %s, %s, %s, %s)
+            INSERT INTO nepremicnina (id_vrste, id_lokacije, opis, leto_gradnje, stevilo_sob, stevilo_sob_opis, nadstropje, m2)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
             RETURNING id_nepremicnine
-            """, (n.id_vrste, n.id_lokacije, n.opis, n.leto_gradnje, n.stevilo_sob, n.nadstropje, n.m2))
+            """, (n.id_vrste, n.id_lokacije, n.opis, n.leto_gradnje, n.stevilo_sob, n.stevilo_sob_opis, n.nadstropje, n.m2))
             n.id_nepremicnine = cur.fetchone()["id_nepremicnine"]
             self.conn.commit()
             return n
+
         
-    
+    def get_oglas_by_url(self, url_oglasa: str) -> Optional[Oglas]:
+        """Poišče obstoječi oglas po url_oglasa (za preprečevanje podvojenega uvoza)."""
+        if not url_oglasa:
+            return None
+        with self.conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+            cur.execute("""
+                SELECT id_oglasa, id_vira, id_nepremicnine, naslov, url_oglasa, cena, datum_objave
+                FROM oglas WHERE url_oglasa = %s
+            """, (url_oglasa,))
+            row = cur.fetchone()
+            if not row:
+                return None
+            return Oglas(
+                id_oglasa=row["id_oglasa"], id_vira=row["id_vira"],
+                id_nepremicnine=row["id_nepremicnine"], naslov=row["naslov"],
+                url_oglasa=row["url_oglasa"], cena=row["cena"],
+                datum_objave=row["datum_objave"]
+                )
+
+        
     def add_oglas(self, og: Oglas) -> Oglas:
         """Vnos (insert ukaz) novega oglasa v bazo."""
         with self.conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
@@ -167,8 +187,8 @@ class Repository:
             sql = """
                 SELECT
                     o.id_oglasa, o.naslov, o.url_oglasa, o.cena, o.datum_objave,
-                    n.id_nepremicnine, n.opis, n.leto_gradnje, n.stevilo_sob, n.nadstropje, n.m2,
-                    l.id_lokacije, l.ime, l.regija, l.soseska, l.postna_stevilka,
+                    n.id_nepremicnine, n.opis, n.leto_gradnje, n.stevilo_sob, n.stevilo_sob_opis, n.nadstropje, n.m2,
+                    l.id_lokacije, l.ime, l.regija, l.obcina, l.postna_stevilka,
                     v.id_vrste, v.ime_vrste,
                     vi.id_vira, vi.ime_vira, vi.url_vira
                 FROM oglas o
@@ -231,12 +251,13 @@ class Repository:
                 nepremicnina = Nepremicnina(
                     id_nepremicnine=r["id_nepremicnine"], opis=r["opis"],
                     leto_gradnje=r["leto_gradnje"], stevilo_sob=r["stevilo_sob"],
+                    stevilo_sob_opis=r["stevilo_sob_opis"],
                     nadstropje=r["nadstropje"], m2=r["m2"],
                     id_vrste=r["id_vrste"], id_lokacije=r["id_lokacije"],
                 )
                 lokacija = Lokacija(
                     id_lokacije=r["id_lokacije"], ime=r["ime"], regija=r["regija"],
-                    soseska=r["soseska"], postna_stevilka=r["postna_stevilka"],
+                    obcina=r["obcina"], postna_stevilka=r["postna_stevilka"],
                 )
                 vrsta = Vrsta_nepremicnine(id_vrste=r["id_vrste"], ime_vrste=r["ime_vrste"])
                 vir = Vir(id_vira=r["id_vira"], ime_vira=r["ime_vira"], url_vira=r["url_vira"])

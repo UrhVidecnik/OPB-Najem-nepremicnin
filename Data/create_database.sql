@@ -39,8 +39,6 @@ CREATE TABLE IF NOT EXISTS nepremicnina (
         FOREIGN KEY (id_vrste) REFERENCES vrsta_nepremicnine (id_vrste),
     CONSTRAINT fk_nepremicnina_lokacija
         FOREIGN KEY (id_lokacije) REFERENCES lokacija (id_lokacije),
-    CONSTRAINT chk_nepremicnina_leto_gradnje
-        CHECK (leto_gradnje IS NULL OR leto_gradnje BETWEEN 1800 AND 2100),
     CONSTRAINT chk_nepremicnina_stevilo_sob
         CHECK (stevilo_sob IS NULL OR stevilo_sob > 0),
     CONSTRAINT chk_nepremicnina_m2
