@@ -1,16 +1,35 @@
 {
-
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: Current File",
+            "name": "Python: Trenutna datoteka",
             "type": "debugpy",
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
             "cwd": "${workspaceRoot}",
             "justMyCode": true,
-            "env": {"PYTHONPATH": "${workspaceFolder}/"}
+            "env": { "PYTHONPATH": "${workspaceFolder}/" }
+        },
+        {
+            "name": "Zaženi spletno aplikacijo (app.py)",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/app.py",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceRoot}",
+            "justMyCode": true,
+            "env": { "PYTHONPATH": "${workspaceFolder}/" }
+        },
+        {
+            "name": "Poženi teste (testi.py)",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/testi.py",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceRoot}",
+            "justMyCode": true,
+            "env": { "PYTHONPATH": "${workspaceFolder}/" }
         }
     ]
 }

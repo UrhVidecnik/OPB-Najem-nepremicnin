@@ -1,0 +1,22 @@
+# Knjižnice, ki jih potrebuje spletna aplikacija.
+# Namestitev:  pip install -r requirements.txt
+#
+# Zakaj ">=" in ne "==" ?
+#   Različice so navedene kot NAJNIŽJE še delujoče, ne kot točne.
+#   Če jih pripnemo z "==", se namestitev na novejšem Pythonu podre:
+#   pip za točno tisto različico ne najde pripravljenega paketa (wheel),
+#   zato jo poskusi prevesti iz izvorne kode – za to pa potrebuje prevajalnik
+#   in razvojne datoteke PostgreSQL (pg_config), ki jih na sistemu običajno ni.
+#   S ">=" pip vedno vzame različico, ki za tvoj Python paket ima.
+
+bottle>=0.13.4           # mikro spletno ogrodje (poti, predloge)
+
+psycopg2-binary>=2.9.11  # gonilnik za PostgreSQL
+                         # "binary" = paket z že prevedeno kodo.
+                         # 2.9.11 je PRVA različica s podporo za Python 3.14;
+                         # starejša 2.9.10 se na 3.14 poskusi prevesti iz izvorne
+                         # kode in javi "pg_config executable not found".
+
+dataclasses-json>=0.6.7  # doda .to_json() / .from_json() našim dataclass modelom
+
+bcrypt>=4.2.1            # varno zgoščevanje gesel

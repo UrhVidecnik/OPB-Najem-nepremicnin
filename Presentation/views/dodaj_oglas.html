@@ -1,0 +1,129 @@
+%# ===========================================================================
+%#  Presentation/views/dodaj_oglas.html – obrazec za nov oglas
+%#  Prejme: vrste, regije, viri, napaka (str ali None), podatki (slovar)
+%#
+%#  `podatki` so že vpisane vrednosti. Ob napaki jih vrnemo v obrazec,
+%#  da uporabniku ni treba vsega tipkati znova.
+%# ===========================================================================
+% rebase('osnova.html', naslov_strani='Dodaj oglas')
+
+<h1>Dodaj nov oglas</h1>
+<p class="podnaslov">Oglas se shrani v isto bazo kot pobrani podatki.</p>
+
+% if napaka:
+    <div class="sporocilo sporocilo-napaka">{{ napaka }}</div>
+% end
+
+<form class="plosca" method="post" action="{{ url('/dodaj') }}">
+    <div class="filtri-mreza">
+
+        <div class="polje polje-siroko">
+            <label for="naslov">Naslov oglasa *</label>
+            <input type="text" id="naslov" name="naslov" required maxlength="300"
+                   placeholder="npr. BEŽIGRAD, 2-sobno stanovanje z balkonom"
+                   value="{{ podatki.get('naslov', '') }}">
+        </div>
+
+        <div class="polje">
+            <label for="cena">Najemnina (€/mesec) *</label>
+            <input type="number" id="cena" name="cena" required min="0" step="0.01"
+                   value="{{ podatki.get('cena', '') }}">
+        </div>
+
+        <div class="polje">
+            <label for="m2">Površina (m²) *</label>
+            <input type="number" id="m2" name="m2" required min="0.1" step="0.1"
+                   value="{{ podatki.get('m2', '') }}">
+        </div>
+
+        <div class="polje">
+            <label for="id_vrste">Vrsta nepremičnine *</label>
+            <select id="id_vrste" name="id_vrste" required>
+                % for v in vrste:
+                    <option value="{{ v.id_vrste }}"
+                        {{ 'selected' if str(podatki.get('id_vrste', '')) == str(v.id_vrste) else '' }}>
+                        {{ v.ime_vrste }}
+                    </option>
+                % end
+            </select>
+        </div>
+
+        <div class="polje">
+            <label for="id_vira">Vir *</label>
+            <select id="id_vira" name="id_vira" required>
+                % for v in viri:
+                    <option value="{{ v.id_vira }}"
+                        {{ 'selected' if str(podatki.get('id_vira', '')) == str(v.id_vira) else '' }}>
+                        {{ v.ime_vira }}
+                    </option>
+                % end
+            </select>
+        </div>
+
+        <div class="polje">
+            <label for="id_regije">Regija</label>
+            <select id="id_regije" name="id_regije">
+                <option value="">— brez regije —</option>
+                % for r in regije:
+                    <option value="{{ r.id_regije }}"
+                        {{ 'selected' if str(podatki.get('id_regije', '')) == str(r.id_regije) else '' }}>
+                        {{ r.ime_regije }} ({{ r.drzava }})
+                    </option>
+                % end
+            </select>
+        </div>
+
+        <div class="polje">
+            <label for="obcina">Občina</label>
+            <input type="text" id="obcina" name="obcina" value="{{ podatki.get('obcina', '') }}">
+        </div>
+
+        <div class="polje">
+            <label for="naselje">Naselje</label>
+            <input type="text" id="naselje" name="naselje" value="{{ podatki.get('naselje', '') }}">
+        </div>
+
+        <div class="polje">
+            <label for="stevilo_sob">Število sob</label>
+            <input type="number" id="stevilo_sob" name="stevilo_sob" min="0.5" step="0.5"
+                   value="{{ podatki.get('stevilo_sob', '') }}">
+        </div>
+
+        <div class="polje">
+            <label for="stevilo_sob_opis">Opis sob</label>
+            <input type="text" id="stevilo_sob_opis" name="stevilo_sob_opis"
+                   placeholder="npr. 2-sobno" value="{{ podatki.get('stevilo_sob_opis', '') }}">
+        </div>
+
+        <div class="polje">
+            <label for="leto_gradnje">Leto gradnje</label>
+            <input type="number" id="leto_gradnje" name="leto_gradnje" min="1200" max="2100"
+                   value="{{ podatki.get('leto_gradnje', '') }}">
+        </div>
+
+        <div class="polje">
+            <label for="nadstropje">Nadstropje</label>
+            <input type="text" id="nadstropje" name="nadstropje" maxlength="50"
+                   placeholder="npr. P, 2, M" value="{{ podatki.get('nadstropje', '') }}">
+        </div>
+
+        <div class="polje polje-siroko">
+            <label for="url_oglasa">Povezava do izvirnega oglasa</label>
+            <input type="url" id="url_oglasa" name="url_oglasa"
+                   placeholder="https://..." value="{{ podatki.get('url_oglasa', '') }}">
+        </div>
+
+        <div class="polje polje-siroko">
+            <label for="opis">Opis</label>
+            <textarea id="opis" name="opis">{{ podatki.get('opis', '') }}</textarea>
+        </div>
+    </div>
+
+    <div class="filtri-gumbi">
+        <button type="submit" class="gumb gumb-glavni">Shrani oglas</button>
+        <a class="gumb" href="{{ url('/oglasi') }}">Prekliči</a>
+    </div>
+    <p class="drobno" style="color:var(--barva-tiho); margin-top:8px">
+        Polja z zvezdico (*) so obvezna.
+    </p>
+</form>

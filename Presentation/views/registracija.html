@@ -1,0 +1,49 @@
+%# ===========================================================================
+%#  Presentation/views/registracija.html – obrazec za registracijo
+%#  Prejme: napaka (str ali None), vpisano_ime (str)
+%# ===========================================================================
+% rebase('osnova.html', naslov_strani='Registracija')
+
+<div class="ozka-plosca">
+    <div class="plosca">
+        <h1 style="font-size:22px">Registracija</h1>
+        <p class="podnaslov" style="margin-bottom:16px">
+            Ustvari račun, da boš lahko dodajal in urejal oglase.
+        </p>
+
+        % if napaka:
+            <div class="sporocilo sporocilo-napaka">{{ napaka }}</div>
+        % end
+
+        <form method="post" action="{{ url('/registracija') }}">
+            <div class="polje">
+                <label for="uporabnisko_ime">Uporabniško ime</label>
+                <input type="text" id="uporabnisko_ime" name="uporabnisko_ime"
+                       required autofocus minlength="3" maxlength="50"
+                       autocomplete="username" value="{{ vpisano_ime }}">
+            </div>
+
+            <div class="polje">
+                <label for="geslo">Geslo (vsaj 5 znakov)</label>
+                <input type="password" id="geslo" name="geslo"
+                       required minlength="5" autocomplete="new-password">
+            </div>
+
+            <div class="polje">
+                <label for="geslo_ponovno">Ponovi geslo</label>
+                <input type="password" id="geslo_ponovno" name="geslo_ponovno"
+                       required minlength="5" autocomplete="new-password">
+            </div>
+
+            <button type="submit" class="gumb gumb-glavni" style="width:100%">Ustvari račun</button>
+        </form>
+
+        <p style="margin-top:14px; text-align:center; color:var(--barva-tiho)">
+            Že imaš račun? <a href="{{ url('/prijava') }}">Prijavi se</a>
+        </p>
+
+        <p class="drobno" style="margin-top:12px; color:var(--barva-tiho)">
+            Geslo je v bazi shranjeno zgoščeno (bcrypt) – tudi mi ga ne vidimo.
+        </p>
+    </div>
+</div>

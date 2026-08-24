@@ -1,0 +1,76 @@
+%# ===========================================================================
+%#  Data/Presentation/views/osnova.html
+%#
+%#  SKUPNA OGRODNA PREDLOGA (layout).
+%#  Vse ostale strani jo uporabijo z:  % rebase('osnova.html', naslov_strani='...')
+%#  Bottle najprej zgenerira vsebino podstrani in jo tukaj vstavi na mesto
+%#  spremenljivke `base`.
+%#
+%#  Opomba o zapisu:
+%#    % vrstica   -> Python koda
+%#    {{ izraz }} -> izpis vrednosti (Bottle jo SAM ubeži proti XSS)
+%#    {{! izraz }} -> izpis BREZ ubežanja (uporabljamo samo, kjer je nujno)
+%# ===========================================================================
+% setdefault('naslov_strani', 'Najem nepremičnin')
+% setdefault('uporabnik', None)
+% setdefault('vloga', None)
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ naslov_strani }} · Najem nepremičnin</title>
+    <link rel="stylesheet" href="{{ url('/static/style.css') }}">
+</head>
+<body>
+
+<header class="glava">
+    <div class="vsebnik glava-vrstica">
+        <a class="logo" href="{{ url('/') }}">
+            <span class="logo-znak">◧</span> Najem nepremičnin
+        </a>
+
+        <nav class="meni">
+            <a href="{{ url('/oglasi') }}">Oglasi</a>
+            <a href="{{ url('/statistika') }}">Statistika</a>
+            % if uporabnik:
+                <a href="{{ url('/dodaj') }}">Dodaj oglas</a>
+            % end
+        </nav>
+
+        <div class="uporabnik-blok">
+            % if uporabnik:
+                <span class="uporabnik-ime">
+                    {{ uporabnik }}
+                    % if vloga == 'admin':
+                        <span class="znacka znacka-admin">admin</span>
+                    % end
+                </span>
+                <a class="gumb gumb-tih" href="{{ url('/odjava') }}">Odjava</a>
+            % else:
+                <a class="gumb gumb-tih" href="{{ url('/prijava') }}">Prijava</a>
+                <a class="gumb gumb-glavni" href="{{ url('/registracija') }}">Registracija</a>
+            % end
+        </div>
+    </div>
+</header>
+
+<main class="vsebnik glavna-vsebina">
+    {{! base }}
+</main>
+
+<footer class="noga">
+    <div class="vsebnik">
+        <p>
+            Projektna naloga pri predmetu <strong>Osnove podatkovnih baz</strong> ·
+            Jure Kraševec in Urh Videčnik · FMF, 2026
+        </p>
+        <p class="drobno">
+            Podatki so pobrani s portala nepremicnine.net in služijo izključno
+            študijskim namenom.
+        </p>
+    </div>
+</footer>
+
+</body>
+</html>

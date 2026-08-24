@@ -1,0 +1,108 @@
+%# ===========================================================================
+%#  Presentation/views/domaca_stran.html – uvodna stran s pregledom
+%#
+%#  Prejme: statistika (StatistikaDTO), najdrazji, najcenejsi (seznama
+%#          OglasDTO), po_regijah, stevilo_regij, stevilo_lokacij
+%# ===========================================================================
+% rebase('osnova.html', naslov_strani='Domača stran')
+
+<h1>Pregled ponudbe najema</h1>
+<p class="podnaslov">
+    Podatki so pobrani s portala nepremicnine.net in shranjeni v podatkovni
+    bazi PostgreSQL na strežniku FMF.
+</p>
+
+%# ── Ključne številke ────────────────────────────────────────────────────
+<div class="stat-mreza">
+    <div class="stat-kartica">
+        <div class="stat-oznaka">Oglasov v bazi</div>
+        <div class="stat-vrednost">{{ '{:,}'.format(statistika.stevilo_oglasov).replace(',', '.') }}</div>
+    </div>
+    <div class="stat-kartica">
+        <div class="stat-oznaka">Povprečna najemnina</div>
+        <div class="stat-vrednost">{{ '{:,.0f}'.format(statistika.povprecna_cena).replace(',', '.') }} <span class="stat-enota">€</span></div>
+    </div>
+    <div class="stat-kartica">
+        <div class="stat-oznaka">Mediana najemnine</div>
+        <div class="stat-vrednost">{{ '{:,.0f}'.format(statistika.mediana_cena).replace(',', '.') }} <span class="stat-enota">€</span></div>
+    </div>
+    <div class="stat-kartica">
+        <div class="stat-oznaka">Povprečna cena</div>
+        <div class="stat-vrednost">{{ '{:.2f}'.format(statistika.povprecna_cena_na_m2) }} <span class="stat-enota">€/m²</span></div>
+    </div>
+    <div class="stat-kartica">
+        <div class="stat-oznaka">Povprečna velikost</div>
+        <div class="stat-vrednost">{{ '{:.0f}'.format(statistika.povprecna_m2) }} <span class="stat-enota">m²</span></div>
+    </div>
+    <div class="stat-kartica">
+        <div class="stat-oznaka">Regij / lokacij</div>
+        <div class="stat-vrednost">{{ stevilo_regij }} <span class="stat-enota">/ {{ stevilo_lokacij }}</span></div>
+    </div>
+</div>
+
+<div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:8px;">
+    <a class="gumb gumb-glavni" href="{{ url('/oglasi') }}">Brskaj po oglasih</a>
+    <a class="gumb" href="{{ url('/statistika') }}">Poglej statistiko</a>
+</div>
+
+%# ── Najdražje regije ────────────────────────────────────────────────────
+% if po_regijah:
+<h2>Kje je najem najdražji?</h2>
+<div class="plosca">
+    <div class="tabela-ovoj">
+    <table class="tabela">
+        <thead>
+            <tr>
+                <th>Regija</th>
+                <th>Država</th>
+                <th class="stevilka">Oglasov</th>
+                <th class="stevilka">Povpr. najemnina</th>
+                <th class="stevilka">Povpr. €/m²</th>
+            </tr>
+        </thead>
+        <tbody>
+        % for r in po_regijah:
+            <tr>
+                <td>{{ r.ime_regije }}</td>
+                <td>
+                    <span class="znacka znacka-{{ r.drzava.lower() }}">{{ r.drzava }}</span>
+                </td>
+                <td class="stevilka">{{ r.stevilo_oglasov }}</td>
+                <td class="stevilka">{{ '{:,.0f}'.format(r.povprecna_cena).replace(',', '.') }} €</td>
+                <td class="stevilka">{{ '{:.2f}'.format(r.povprecna_cena_na_m2) }} €</td>
+            </tr>
+        % end
+        </tbody>
+    </table>
+    </div>
+</div>
+% end
+
+%# ── Dva stolpca: najdražji in najcenejši oglasi ─────────────────────────
+<div class="podrobnosti-mreza">
+    <div>
+        <h2>Najdražji oglasi</h2>
+        <div class="plosca">
+        % for o in najdrazji:
+            <div style="padding:9px 0; border-bottom:1px solid var(--barva-crta);">
+                <a href="{{ url('/oglas/%d' % o.oglas.id_oglasa) }}">{{ o.oglas.naslov }}</a><br>
+                <span class="oglas-lokacija">{{ o.lokacija.prikaz }}</span>
+                <strong style="float:right">{{ '{:,.0f}'.format(float(o.oglas.cena)).replace(',', '.') }} €</strong>
+            </div>
+        % end
+        </div>
+    </div>
+
+    <div>
+        <h2>Najcenejši oglasi</h2>
+        <div class="plosca">
+        % for o in najcenejsi:
+            <div style="padding:9px 0; border-bottom:1px solid var(--barva-crta);">
+                <a href="{{ url('/oglas/%d' % o.oglas.id_oglasa) }}">{{ o.oglas.naslov }}</a><br>
+                <span class="oglas-lokacija">{{ o.lokacija.prikaz }}</span>
+                <strong style="float:right">{{ '{:,.0f}'.format(float(o.oglas.cena)).replace(',', '.') }} €</strong>
+            </div>
+        % end
+        </div>
+    </div>
+</div>

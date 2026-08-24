@@ -1,0 +1,43 @@
+%# ===========================================================================
+%#  Presentation/views/prijava.html – obrazec za prijavo
+%#  Prejme: napaka (str ali None), naslednja (pot, kamor preusmerimo po prijavi)
+%# ===========================================================================
+% rebase('osnova.html', naslov_strani='Prijava')
+% setdefault('naslednja', None)
+
+<div class="ozka-plosca">
+    <div class="plosca">
+        <h1 style="font-size:22px">Prijava</h1>
+        <p class="podnaslov" style="margin-bottom:16px">
+            Prijava je potrebna za dodajanje in urejanje oglasov.
+        </p>
+
+        % if napaka:
+            <div class="sporocilo sporocilo-napaka">{{ napaka }}</div>
+        % end
+
+        <form method="post" action="{{ url('/prijava') }}">
+            %# Skrito polje: po uspešni prijavi se vrnemo na stran,
+            %# s katere je uporabnika sistem preusmeril sem.
+            <input type="hidden" name="naslednja" value="{{ naslednja or '' }}">
+
+            <div class="polje">
+                <label for="uporabnisko_ime">Uporabniško ime</label>
+                <input type="text" id="uporabnisko_ime" name="uporabnisko_ime"
+                       required autofocus autocomplete="username">
+            </div>
+
+            <div class="polje">
+                <label for="geslo">Geslo</label>
+                <input type="password" id="geslo" name="geslo"
+                       required autocomplete="current-password">
+            </div>
+
+            <button type="submit" class="gumb gumb-glavni" style="width:100%">Prijavi se</button>
+        </form>
+
+        <p style="margin-top:14px; text-align:center; color:var(--barva-tiho)">
+            Nimaš računa? <a href="{{ url('/registracija') }}">Registriraj se</a>
+        </p>
+    </div>
+</div>

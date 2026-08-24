@@ -1,0 +1,73 @@
+%# ===========================================================================
+%#  Presentation/views/uredi_oglas.html – obrazec za urejanje oglasa
+%#  Prejme: o (OglasDTO), napaka (str ali None)
+%# ===========================================================================
+% rebase('osnova.html', naslov_strani='Uredi oglas')
+
+<p style="margin-bottom:12px">
+    <a href="{{ url('/oglas/%d' % o.oglas.id_oglasa) }}">‹ Nazaj na oglas</a>
+</p>
+
+<h1>Uredi oglas</h1>
+<p class="podnaslov">Oglas št. {{ o.oglas.id_oglasa }} · {{ o.lokacija.prikaz }}</p>
+
+% if napaka:
+    <div class="sporocilo sporocilo-napaka">{{ napaka }}</div>
+% end
+
+<form class="plosca" method="post" action="{{ url('/uredi/%d' % o.oglas.id_oglasa) }}">
+    <div class="filtri-mreza">
+
+        <div class="polje polje-siroko">
+            <label for="naslov">Naslov oglasa *</label>
+            <input type="text" id="naslov" name="naslov" required maxlength="300"
+                   value="{{ o.oglas.naslov }}">
+        </div>
+
+        <div class="polje">
+            <label for="cena">Najemnina (€/mesec) *</label>
+            <input type="number" id="cena" name="cena" required min="0" step="0.01"
+                   value="{{ float(o.oglas.cena) }}">
+        </div>
+
+        <div class="polje">
+            <label for="m2">Površina (m²) *</label>
+            <input type="number" id="m2" name="m2" required min="0.1" step="0.1"
+                   value="{{ float(o.nepremicnina.m2) }}">
+        </div>
+
+        <div class="polje">
+            <label for="stevilo_sob">Število sob</label>
+            <input type="number" id="stevilo_sob" name="stevilo_sob" min="0.5" step="0.5"
+                   value="{{ '' if o.nepremicnina.stevilo_sob is None else float(o.nepremicnina.stevilo_sob) }}">
+        </div>
+
+        <div class="polje">
+            <label for="leto_gradnje">Leto gradnje</label>
+            <input type="number" id="leto_gradnje" name="leto_gradnje" min="1200" max="2100"
+                   value="{{ o.nepremicnina.leto_gradnje or '' }}">
+        </div>
+
+        <div class="polje">
+            <label for="nadstropje">Nadstropje</label>
+            <input type="text" id="nadstropje" name="nadstropje" maxlength="50"
+                   value="{{ o.nepremicnina.nadstropje or '' }}">
+        </div>
+
+        <div class="polje polje-siroko">
+            <label for="url_oglasa">Povezava do izvirnega oglasa</label>
+            <input type="url" id="url_oglasa" name="url_oglasa"
+                   value="{{ o.oglas.url_oglasa or '' }}">
+        </div>
+
+        <div class="polje polje-siroko">
+            <label for="opis">Opis</label>
+            <textarea id="opis" name="opis">{{ o.nepremicnina.opis or '' }}</textarea>
+        </div>
+    </div>
+
+    <div class="filtri-gumbi">
+        <button type="submit" class="gumb gumb-glavni">Shrani spremembe</button>
+        <a class="gumb" href="{{ url('/oglas/%d' % o.oglas.id_oglasa) }}">Prekliči</a>
+    </div>
+</form>

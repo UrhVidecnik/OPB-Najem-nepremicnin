@@ -1,209 +1,373 @@
-from typing import Optional, List
-from datetime import date
+"""
+============================================================================
+ OPB – Najem nepremičnin
+ Datoteka: Services/service.py
 
-from Data.repository import Repository
-from Data.models import Vir, Vrsta_nepremicnine, Lokacija, Nepremicnina, Oglas, OglasDTO, OglasFiltriDTO, StatisticsDTO
+ APLIKACIJSKI NIVO (business logic).
+
+ Vmesni sloj med spletno aplikacijo (app.py) in bazo (Data/repository.py).
+
+ Naloge tega nivoja:
+   - PREVERI vhodne podatke, preden gredo v bazo (validacija);
+   - PRETVORI podatke iz spletnega obrazca (vse je niz!) v prave tipe;
+   - združi več klicev repozitorija v eno smiselno operacijo
+     (npr. "dodaj oglas" = ustvari lokacijo + nepremičnino + oglas).
+
+ Pravilo: app.py NE kliče Repository neposredno, vedno gre prek Service.
+============================================================================
+"""
+
+from typing import List, Optional
+
+from Data.models import (
+    Lokacija,
+    Nepremicnina,
+    Oglas,
+    OglasDTO,
+    OglasFiltriDTO,
+    Regija,
+    StatistikaDTO,
+    StranDTO,
+    Vir,
+    VrsticaPoRegijiDTO,
+    VrstaNepremicnine,
+)
+from Data.repository import UREJANJA, Repository
+
+# Koliko oglasov prikažemo na eni strani.
+PRIVZETO_NA_STRAN = 25
+NAJVEC_NA_STRAN = 100
+
 
 class Service:
+    """Poslovna logika aplikacije."""
+
     def __init__(self, repository: Optional[Repository] = None):
+        # Repozitorij lahko podamo od zunaj (uporabno pri testiranju,
+        # kjer podtaknemo lažni repozitorij); sicer si ga ustvarimo sami.
         self.repository = repository or Repository()
 
-    def get_oglasi(self, filtri: Optional[OglasFiltriDTO] = None) -> List[OglasDTO]:
-        self._preveri_filtre(filtri)
-        return self.repository.get_oglasi_dto(filtri)
-    
-    def get_statistics(self, filtri: Optional[OglasFiltriDTO] = None) -> StatisticsDTO:
-        self._preveri_filtre(filtri)
-        return self.repository.get_statistics(filtri)
-    
-    def _preveri_filtre(self, filtri: Optional[OglasFiltriDTO]) -> None:
+    # ── Pretvorbe iz spletnega obrazca ──────────────────────────────────────
+    #
+    # Iz HTML obrazca vedno pride NIZ. Prazno polje je prazen niz "".
+    # Te tri metode niz varno pretvorijo v število ali None.
+
+    @staticmethod
+    def v_int(vrednost) -> Optional[int]:
+        """'42' -> 42, '' -> None, 'abc' -> None (brez sesutja)."""
+        if vrednost is None or str(vrednost).strip() == "":
+            return None
+        try:
+            return int(str(vrednost).strip())
+        except (TypeError, ValueError):
+            return None
+
+    @staticmethod
+    def v_float(vrednost) -> Optional[float]:
+        """'1200,50' ali '1200.50' -> 1200.5, '' -> None."""
+        if vrednost is None or str(vrednost).strip() == "":
+            return None
+        try:
+            return float(str(vrednost).strip().replace(",", "."))
+        except (TypeError, ValueError):
+            return None
+
+    @staticmethod
+    def v_besedilo(vrednost) -> Optional[str]:
+        """Obreže presledke; prazen niz postane None."""
+        if vrednost is None:
+            return None
+        v = str(vrednost).strip()
+        return v if v else None
+
+    # ── Sestavljanje filtrov ────────────────────────────────────────────────
+
+    def sestavi_filtre(self, obrazec) -> OglasFiltriDTO:
+        """Iz parametrov URL-ja/obrazca sestavi OglasFiltriDTO.
+
+        `obrazec` je bottle-ov request.query ali request.forms –
+        obnaša se kot slovar, zato uporabimo .get().
+        """
+        drzava = self.v_besedilo(obrazec.get("drzava"))
+        if drzava not in (None, "SI", "HR"):
+            drzava = None      # neveljavno vrednost tiho ignoriramo
+
+        urejanje = self.v_besedilo(obrazec.get("urejanje")) or "cena_asc"
+        if urejanje not in UREJANJA:
+            urejanje = "cena_asc"
+
+        filtri = OglasFiltriDTO(
+            iskanje=self.v_besedilo(obrazec.get("q")),
+            id_vrste=self.v_int(obrazec.get("id_vrste")),
+            id_regije=self.v_int(obrazec.get("id_regije")),
+            id_lokacije=self.v_int(obrazec.get("id_lokacije")),
+            drzava=drzava,
+            id_vira=self.v_int(obrazec.get("id_vira")),
+            cena_min=self.v_float(obrazec.get("cena_min")),
+            cena_max=self.v_float(obrazec.get("cena_max")),
+            m2_min=self.v_float(obrazec.get("m2_min")),
+            m2_max=self.v_float(obrazec.get("m2_max")),
+            sobe_min=self.v_float(obrazec.get("sobe_min")),
+            leto_min=self.v_int(obrazec.get("leto_min")),
+            urejanje=urejanje,
+        )
+        self.preveri_filtre(filtri)
+        return filtri
+
+    def preveri_filtre(self, filtri: Optional[OglasFiltriDTO]) -> None:
+        """Zavrne nesmiselne filtre (npr. min > max).
+
+        Namesto da bi vrgli napako in podrli stran, tu vrednosti
+        raje POPRAVIMO – uporabnik dobi rezultate, ne pa napake 500.
+        """
         if filtri is None:
             return
 
-        if filtri.cena_min is not None and filtri.cena_min < 0:
-            raise ValueError("Minimalna cena ne sme biti negativna")
+        # Negativne vrednosti nimajo smisla -> jih odstranimo.
+        for ime in ("cena_min", "cena_max", "m2_min", "m2_max", "sobe_min"):
+            vrednost = getattr(filtri, ime)
+            if vrednost is not None and vrednost < 0:
+                setattr(filtri, ime, None)
 
-        if filtri.cena_max is not None and filtri.cena_max < 0:
-            raise ValueError("Maksimalna cena ne sme biti negativna")
+        # Če je uporabnik zamenjal min in max, ju zamenjamo nazaj.
+        if (filtri.cena_min is not None and filtri.cena_max is not None
+                and filtri.cena_min > filtri.cena_max):
+            filtri.cena_min, filtri.cena_max = filtri.cena_max, filtri.cena_min
 
-        if (
-            filtri.cena_min is not None
-            and filtri.cena_max is not None
-            and filtri.cena_min > filtri.cena_max
-        ):
-            raise ValueError("Minimalna cena ne sme biti večja od maksimalne.")
+        if (filtri.m2_min is not None and filtri.m2_max is not None
+                and filtri.m2_min > filtri.m2_max):
+            filtri.m2_min, filtri.m2_max = filtri.m2_max, filtri.m2_min
 
-        if filtri.m2_min is not None and filtri.m2_min < 0:
-            raise ValueError("Minimalna površina ne sme biti negativna")
+        if filtri.leto_min is not None and not (1200 <= filtri.leto_min <= 2100):
+            filtri.leto_min = None
 
-        if filtri.m2_max is not None and filtri.m2_max < 0:
-            raise ValueError("Maksimalna površina ne sme biti negativna")
-        
-        if (
-            filtri.m2_min is not None
-            and filtri.m2_max is not None
-            and filtri.m2_min > filtri.m2_max
-        ):
-            raise ValueError("Minimalna površina ne sme biti večja od maksimalne.")
+    # ── Branje oglasov ──────────────────────────────────────────────────────
 
-    
+    def stran_oglasov(
+        self,
+        filtri: Optional[OglasFiltriDTO] = None,
+        stran: int = 1,
+        na_stran: int = PRIVZETO_NA_STRAN,
+    ) -> StranDTO:
+        """Ena stran (filtriranih) oglasov."""
+        self.preveri_filtre(filtri)
+        stran = max(1, stran or 1)
+        na_stran = max(1, min(na_stran or PRIVZETO_NA_STRAN, NAJVEC_NA_STRAN))
+        return self.repository.stran_oglasov(filtri, stran=stran, na_stran=na_stran)
+
+    def dobi_oglas(self, id_oglasa: int) -> Optional[OglasDTO]:
+        if id_oglasa is None:
+            raise ValueError("ID oglasa je obvezen.")
+        return self.repository.dobi_oglas(id_oglasa)
+
+    def prestej_oglase(self, filtri: Optional[OglasFiltriDTO] = None) -> int:
+        self.preveri_filtre(filtri)
+        return self.repository.prestej_oglase(filtri)
+
+    # ── Statistika ──────────────────────────────────────────────────────────
+
+    def statistika(self, filtri: Optional[OglasFiltriDTO] = None) -> StatistikaDTO:
+        self.preveri_filtre(filtri)
+        return self.repository.statistika(filtri)
+
+    def statistika_po_regijah(
+        self, filtri: Optional[OglasFiltriDTO] = None, min_oglasov: int = 5
+    ) -> List[VrsticaPoRegijiDTO]:
+        self.preveri_filtre(filtri)
+        return self.repository.statistika_po_regijah(filtri, min_oglasov=min_oglasov)
+
+    def statistika_po_vrstah(self, filtri: Optional[OglasFiltriDTO] = None) -> List[dict]:
+        self.preveri_filtre(filtri)
+        return self.repository.statistika_po_vrstah(filtri)
+
+    def porazdelitev_cen(
+        self, filtri: Optional[OglasFiltriDTO] = None, sirina_razreda: int = 250
+    ) -> List[dict]:
+        """Podatki za stolpčni diagram cen. Širino razreda omejimo na razumno."""
+        self.preveri_filtre(filtri)
+        sirina_razreda = max(50, min(int(sirina_razreda), 2000))
+        return self.repository.porazdelitev_cen(filtri, sirina_razreda)
+
+    def najdrazji_najcenejsi(self, koliko: int = 5) -> dict:
+        return self.repository.najdrazji_najcenejsi(max(1, min(koliko, 20)))
+
+    # ── Šifranti (spustni seznami v obrazcih) ───────────────────────────────
+
+    def vrste(self) -> List[VrstaNepremicnine]:
+        return self.repository.seznam_vrst()
+
+    def regije(self, drzava: Optional[str] = None) -> List[Regija]:
+        if drzava not in (None, "SI", "HR"):
+            drzava = None
+        return self.repository.seznam_regij(drzava)
+
+    def lokacije(self, id_regije: Optional[int] = None) -> List[Lokacija]:
+        return self.repository.seznam_lokacij(id_regije)
+
+    def viri(self) -> List[Vir]:
+        return self.repository.seznam_virov()
+
+    # ── Pisanje: dodajanje in urejanje oglasov ──────────────────────────────
+
     def dodaj_oglas(
         self,
-        id_vira: int,
-        id_vrste: int,
-        id_lokacije: int,
         naslov: str,
         cena: float,
         m2: float,
+        id_vrste: int,
+        id_vira: int,
+        id_regije: Optional[int] = None,
+        obcina: Optional[str] = None,
+        naselje: Optional[str] = None,
+        upravna_enota: Optional[str] = None,
         url_oglasa: Optional[str] = None,
-        datum_objave: Optional[date] = None,
         opis: Optional[str] = None,
         leto_gradnje: Optional[int] = None,
         stevilo_sob: Optional[float] = None,
         stevilo_sob_opis: Optional[str] = None,
         nadstropje: Optional[str] = None,
     ) -> OglasDTO:
+        """Doda nov oglas – skupaj z nepremičnino in po potrebi novo lokacijo.
+
+        Vrne cel OglasDTO, da ga lahko takoj prikažemo uporabniku.
+        Če karkoli ni v redu, vrže ValueError s SLOVENSKIM sporočilom,
+        ki ga app.py prikaže nad obrazcem.
         """
-        Doda nov oglas v bazo skupaj s pripadajočo nepremičnino.
- 
-        Vrne celoten OglasDTO, pripravljen za takojšen prikaz uporabniku.
-        """
-        if not naslov or not naslov.strip():
-            raise ValueError("Naslov oglasa ne sme biti prazen")
- 
-        vir = self.repository.get_vir_by_id(id_vira)
-        if vir is None:
-            raise ValueError(f"Vir z id_vira={id_vira} ne obstaja")
- 
-        url_oglasa = url_oglasa.strip() if url_oglasa else None
-        opis = opis.strip() if opis else None
-        nadstropje = nadstropje.strip() if nadstropje else None
- 
-        nepremicnina = Nepremicnina(
+        # --- validacija ---
+        naslov = self.v_besedilo(naslov)
+        if not naslov:
+            raise ValueError("Naslov oglasa je obvezen.")
+        if len(naslov) > 300:
+            raise ValueError("Naslov je predolg (največ 300 znakov).")
+
+        if cena is None:
+            raise ValueError("Cena je obvezna.")
+        if cena < 0:
+            raise ValueError("Cena ne sme biti negativna.")
+        if cena > 1_000_000:
+            raise ValueError("Cena je nerealno visoka.")
+
+        if m2 is None or m2 <= 0:
+            raise ValueError("Površina mora biti večja od 0.")
+        if m2 > 10_000:
+            raise ValueError("Površina je nerealno velika.")
+
+        if id_vrste is None:
+            raise ValueError("Izbrati moraš vrsto nepremičnine.")
+        if id_vira is None:
+            raise ValueError("Izbrati moraš vir oglasa.")
+
+        if leto_gradnje is not None and not (1200 <= leto_gradnje <= 2100):
+            raise ValueError("Leto gradnje mora biti med 1200 in 2100.")
+
+        if stevilo_sob is not None and stevilo_sob <= 0:
+            raise ValueError("Število sob mora biti večje od 0.")
+
+        if self.repository.dobi_vir(id_vira) is None:
+            raise ValueError(f"Vir z ID {id_vira} ne obstaja.")
+
+        # --- lokacija: poiščemo obstoječo ali ustvarimo novo ---
+        lokacija = self.repository.dobi_ali_dodaj_lokacijo(
+            id_regije=id_regije,
+            upravna_enota=self.v_besedilo(upravna_enota),
+            obcina=self.v_besedilo(obcina),
+            naselje=self.v_besedilo(naselje),
+        )
+
+        # --- nepremičnina ---
+        nepremicnina = self.repository.dodaj_nepremicnino(Nepremicnina(
             id_vrste=id_vrste,
-            id_lokacije=id_lokacije,
-            opis=opis,
+            id_lokacije=lokacija.id_lokacije,
+            opis=self.v_besedilo(opis),
             leto_gradnje=leto_gradnje,
             stevilo_sob=stevilo_sob,
-            stevilo_sob_opis=stevilo_sob_opis,
-            nadstropje=nadstropje,
+            stevilo_sob_opis=self.v_besedilo(stevilo_sob_opis),
+            nadstropje=self.v_besedilo(nadstropje),
             m2=m2,
-        )
-        nepremicnina = self.repository.add_nepremicnina(nepremicnina)
- 
-        oglas = Oglas(
+        ))
+
+        # --- oglas ---
+        oglas = self.repository.dodaj_oglas(Oglas(
             id_vira=id_vira,
             id_nepremicnine=nepremicnina.id_nepremicnine,
             naslov=naslov,
-            url_oglasa=url_oglasa,
+            url_oglasa=self.v_besedilo(url_oglasa),
             cena=cena,
-            datum_objave=datum_objave,
-        )
-        oglas = self.repository.add_oglas(oglas)
- 
-        vrsta = self._najdi_vrsto(id_vrste)
-        lokacija = self._najdi_lokacijo(id_lokacije)
+        ))
 
-        return OglasDTO(
-            oglas=oglas,
-            nepremicnina=nepremicnina,
-            lokacija=lokacija,
-            vrsta=vrsta,
-            vir=vir,
-        )
-    
-    def _najdi_vrsto(self, id_vrste: int):
-        return next((v for v in self.repository.list_vrste() if v.id_vrste == id_vrste), None)
+        # Preberemo ga nazaj iz baze, da dobimo tudi izračunane stolpce
+        # (cena_na_m2, ime regije ...) – enako, kot bi ga videli v seznamu.
+        return self.repository.dobi_oglas(oglas.id_oglasa)
 
- 
-    def _najdi_lokacijo(self, id_lokacije: int):
-        return next((l for l in self.repository.list_lokacije() if l.id_lokacije == id_lokacije), None)
-
-
-    def get_viri(self) -> List[Vir]:
-        """Vrne seznam vseh virov (npr. za spustni seznam pri filtriranju oglasov)."""
-        return self.repository.list_viri()
-
-
-    def get_or_add_vir(self, ime_vira: str, url_vira: Optional[str] = None) -> Vir:
-        """Vrne obstoječi vir po imenu ali ga doda, če še ne obstaja (idempotentno, za uvoz podatkov)."""
-        ime_vira = ime_vira.strip() if ime_vira else None
-        if not ime_vira:
-            raise ValueError("Ime vira ne sme biti prazno")
-        return self.repository.get_or_add_vir(ime_vira, url_vira.strip() if url_vira else None)
-
-
-    def get_or_add_vrsta(self, ime_vrste: str) -> Vrsta_nepremicnine:
-        """Vrne obstoječo vrsto nepremičnine po imenu ali jo doda, če še ne obstaja (idempotentno, za uvoz podatkov)."""
-        ime_vrste = ime_vrste.strip() if ime_vrste else None
-        if not ime_vrste:
-            raise ValueError("Ime vrste ne sme biti prazno")
-        return self.repository.get_or_add_vrsta(ime_vrste)
-
-
-    def get_or_add_lokacija(
+    def posodobi_oglas(
         self,
-        ime: str,
-        regija: Optional[str] = None,
-        obcina: Optional[str] = None,
-        postna_stevilka: Optional[int] = None,
-    ) -> Lokacija:
-        """Vrne obstoječo lokacijo (po ime+regija+obcina) ali jo doda, če še ne obstaja (idempotentno, za uvoz podatkov)."""
-        ime = ime.strip() if ime else None
-        if not ime:
-            raise ValueError("Ime lokacije ne sme biti prazno")
-        if postna_stevilka is not None and not (1000 <= postna_stevilka <= 9999):
-            raise ValueError("Poštna številka mora biti štirimestno število (1000-9999)")
-        return self.repository.get_or_add_lokacija(
-            ime=ime,
-            regija=regija.strip() if regija else None,
-            obcina=obcina.strip() if obcina else None,
-            postna_stevilka=postna_stevilka,
-        )
+        id_oglasa: int,
+        naslov: str,
+        cena: float,
+        m2: float,
+        leto_gradnje: Optional[int] = None,
+        stevilo_sob: Optional[float] = None,
+        nadstropje: Optional[str] = None,
+        opis: Optional[str] = None,
+        url_oglasa: Optional[str] = None,
+    ) -> OglasDTO:
+        """Posodobi obstoječi oglas in njegovo nepremičnino."""
+        obstojeci = self.repository.dobi_oglas(id_oglasa)
+        if obstojeci is None:
+            raise ValueError(f"Oglas z ID {id_oglasa} ne obstaja.")
 
-    
-    def get_vir(self, id_vira: int) -> Optional[Vir]:
-        if id_vira is None:
-            raise ValueError("id_vira je obvezen podatek")
-        return self.repository.get_vir_by_id(id_vira)
- 
+        naslov = self.v_besedilo(naslov)
+        if not naslov:
+            raise ValueError("Naslov oglasa je obvezen.")
+        if cena is None or cena < 0:
+            raise ValueError("Cena mora biti nenegativno število.")
+        if m2 is None or m2 <= 0:
+            raise ValueError("Površina mora biti večja od 0.")
+        if leto_gradnje is not None and not (1200 <= leto_gradnje <= 2100):
+            raise ValueError("Leto gradnje mora biti med 1200 in 2100.")
+        if stevilo_sob is not None and stevilo_sob <= 0:
+            raise ValueError("Število sob mora biti večje od 0.")
+
+        # Nepremičnina: spremenimo samo tisto, kar obrazec ureja.
+        n = obstojeci.nepremicnina
+        n.m2 = m2
+        n.leto_gradnje = leto_gradnje
+        n.stevilo_sob = stevilo_sob
+        n.nadstropje = self.v_besedilo(nadstropje)
+        n.opis = self.v_besedilo(opis)
+        self.repository.posodobi_nepremicnino(n)
+
+        o = obstojeci.oglas
+        o.naslov = naslov
+        o.cena = cena
+        o.url_oglasa = self.v_besedilo(url_oglasa)
+        self.repository.posodobi_oglas(o)
+
+        return self.repository.dobi_oglas(id_oglasa)
+
+    def izbrisi_oglas(self, id_oglasa: int) -> bool:
+        if id_oglasa is None:
+            raise ValueError("ID oglasa je obvezen.")
+        return self.repository.izbrisi_oglas(id_oglasa)
+
+    # ── Šifranti: dodajanje ─────────────────────────────────────────────────
+
     def dodaj_vir(self, ime_vira: str, url_vira: Optional[str] = None) -> Vir:
-        """Doda nov vir oglasov v bazo (npr. nepremicnine.net, bolha.com ...)."""
-        ime_vira = ime_vira.strip() if ime_vira else None
+        ime_vira = self.v_besedilo(ime_vira)
         if not ime_vira:
-            raise ValueError("Ime vira ne sme biti prazno")
- 
-        vir = Vir(ime_vira=ime_vira, url_vira=url_vira.strip() if url_vira else None)
-        return self.repository.add_vir(vir)
- 
-    def get_vrste(self) -> List[Vrsta_nepremicnine]:
-        """Vrne seznam vseh vrst nepremičnin (npr. za spustni seznam pri filtriranju oglasov)."""
-        return self.repository.list_vrste()
- 
-    def get_lokacije(self) -> List[Lokacija]:
-        """Vrne seznam vseh lokacij (npr. za spustni seznam pri filtriranju oglasov)."""
-        return self.repository.list_lokacije()
- 
-    def dodaj_lokacijo(
-        self,
-        ime: str,
-        regija: Optional[str] = None,
-        obcina: Optional[str] = None,
-        postna_stevilka: Optional[int] = None,
-    ) -> Lokacija:
-        """Doda novo lokacijo v bazo."""
-        ime = ime.strip() if ime else None
-        if not ime:
-            raise ValueError("Ime lokacije ne sme biti prazno")
- 
-        if postna_stevilka is not None and not (1000 <= postna_stevilka <= 9999):
-            raise ValueError("Poštna številka mora biti štirimestno število (1000-9999)")
- 
-        lokacija = Lokacija(
-            ime=ime,
-            regija=regija.strip() if regija else None,
-            obcina=obcina.strip() if obcina else None,
-            postna_stevilka=postna_stevilka,
-        )
-        return self.repository.add_lokacija(lokacija)
+            raise ValueError("Ime vira ne sme biti prazno.")
+        return self.repository.dobi_ali_dodaj_vir(ime_vira, self.v_besedilo(url_vira))
 
+    def dodaj_vrsto(self, ime_vrste: str) -> VrstaNepremicnine:
+        ime_vrste = self.v_besedilo(ime_vrste)
+        if not ime_vrste:
+            raise ValueError("Ime vrste ne sme biti prazno.")
+        return self.repository.dobi_ali_dodaj_vrsto(ime_vrste)
+
+    def dodaj_regijo(self, ime_regije: str, drzava: str = "SI") -> Regija:
+        ime_regije = self.v_besedilo(ime_regije)
+        if not ime_regije:
+            raise ValueError("Ime regije ne sme biti prazno.")
+        if drzava not in ("SI", "HR"):
+            raise ValueError("Država mora biti 'SI' ali 'HR'.")
+        return self.repository.dobi_ali_dodaj_regijo(ime_regije, drzava)

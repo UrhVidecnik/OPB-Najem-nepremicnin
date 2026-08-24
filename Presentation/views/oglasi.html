@@ -1,0 +1,202 @@
+%# ===========================================================================
+%#  Presentation/views/oglasi.html – seznam oglasov z filtri in paginacijo
+%#
+%#  Prejme: rezultat (StranDTO), filtri (OglasFiltriDTO),
+%#          vrste, regije, viri, na_stran
+%# ===========================================================================
+% rebase('osnova.html', naslov_strani='Oglasi')
+
+<h1>Oglasi za najem</h1>
+<p class="podnaslov">Poišči nepremičnino po ceni, velikosti, lokaciji ali ključni besedi.</p>
+
+%# ── Obrazec s filtri ────────────────────────────────────────────────────
+%# method="get": filtri se zapišejo v naslovno vrstico, zato je stran
+%# z izbranimi filtri mogoče shraniti med zaznamke ali deliti s prijateljem.
+<form class="plosca" method="get" action="{{ url('/oglasi') }}">
+    <div class="filtri-mreza">
+
+        <div class="polje polje-siroko">
+            <label for="q">Ključna beseda</label>
+            <input type="text" id="q" name="q" placeholder="npr. Bežigrad, balkon, novogradnja"
+                   value="{{ filtri.iskanje or '' }}">
+        </div>
+
+        <div class="polje">
+            <label for="id_vrste">Vrsta</label>
+            <select id="id_vrste" name="id_vrste">
+                <option value="">Vse vrste</option>
+                % for v in vrste:
+                    <option value="{{ v.id_vrste }}" {{ 'selected' if filtri.id_vrste == v.id_vrste else '' }}>
+                        {{ v.ime_vrste }}
+                    </option>
+                % end
+            </select>
+        </div>
+
+        <div class="polje">
+            <label for="drzava">Država</label>
+            <select id="drzava" name="drzava">
+                <option value="">Vse</option>
+                <option value="SI" {{ 'selected' if filtri.drzava == 'SI' else '' }}>Slovenija</option>
+                <option value="HR" {{ 'selected' if filtri.drzava == 'HR' else '' }}>Hrvaška</option>
+            </select>
+        </div>
+
+        <div class="polje">
+            <label for="id_regije">Regija</label>
+            <select id="id_regije" name="id_regije">
+                <option value="">Vse regije</option>
+                % for r in regije:
+                    <option value="{{ r.id_regije }}" {{ 'selected' if filtri.id_regije == r.id_regije else '' }}>
+                        {{ r.ime_regije }} ({{ r.drzava }})
+                    </option>
+                % end
+            </select>
+        </div>
+
+        <div class="polje">
+            <label for="cena_min">Cena od (€)</label>
+            <input type="number" id="cena_min" name="cena_min" min="0" step="10"
+                   value="{{ '' if filtri.cena_min is None else int(filtri.cena_min) }}">
+        </div>
+
+        <div class="polje">
+            <label for="cena_max">Cena do (€)</label>
+            <input type="number" id="cena_max" name="cena_max" min="0" step="10"
+                   value="{{ '' if filtri.cena_max is None else int(filtri.cena_max) }}">
+        </div>
+
+        <div class="polje">
+            <label for="m2_min">Površina od (m²)</label>
+            <input type="number" id="m2_min" name="m2_min" min="0" step="5"
+                   value="{{ '' if filtri.m2_min is None else int(filtri.m2_min) }}">
+        </div>
+
+        <div class="polje">
+            <label for="m2_max">Površina do (m²)</label>
+            <input type="number" id="m2_max" name="m2_max" min="0" step="5"
+                   value="{{ '' if filtri.m2_max is None else int(filtri.m2_max) }}">
+        </div>
+
+        <div class="polje">
+            <label for="sobe_min">Najmanj sob</label>
+            <input type="number" id="sobe_min" name="sobe_min" min="0" step="0.5"
+                   value="{{ '' if filtri.sobe_min is None else filtri.sobe_min }}">
+        </div>
+
+        <div class="polje">
+            <label for="leto_min">Zgrajeno po letu</label>
+            <input type="number" id="leto_min" name="leto_min" min="1200" max="2100"
+                   value="{{ '' if filtri.leto_min is None else filtri.leto_min }}">
+        </div>
+
+        <div class="polje">
+            <label for="urejanje">Razvrsti po</label>
+            <select id="urejanje" name="urejanje">
+                <option value="cena_asc"    {{ 'selected' if filtri.urejanje == 'cena_asc' else '' }}>ceni – naraščajoče</option>
+                <option value="cena_desc"   {{ 'selected' if filtri.urejanje == 'cena_desc' else '' }}>ceni – padajoče</option>
+                <option value="m2_desc"     {{ 'selected' if filtri.urejanje == 'm2_desc' else '' }}>površini – padajoče</option>
+                <option value="m2_asc"      {{ 'selected' if filtri.urejanje == 'm2_asc' else '' }}>površini – naraščajoče</option>
+                <option value="eur_m2_asc"  {{ 'selected' if filtri.urejanje == 'eur_m2_asc' else '' }}>€/m² – naraščajoče</option>
+                <option value="eur_m2_desc" {{ 'selected' if filtri.urejanje == 'eur_m2_desc' else '' }}>€/m² – padajoče</option>
+                <option value="leto_desc"   {{ 'selected' if filtri.urejanje == 'leto_desc' else '' }}>letu gradnje</option>
+                <option value="naslov_asc"  {{ 'selected' if filtri.urejanje == 'naslov_asc' else '' }}>naslovu (A–Ž)</option>
+            </select>
+        </div>
+
+        <div class="polje">
+            <label for="na_stran">Na stran</label>
+            <select id="na_stran" name="na_stran">
+                % for n in (10, 25, 50, 100):
+                    <option value="{{ n }}" {{ 'selected' if na_stran == n else '' }}>{{ n }}</option>
+                % end
+            </select>
+        </div>
+    </div>
+
+    <div class="filtri-gumbi">
+        <button type="submit" class="gumb gumb-glavni">Filtriraj</button>
+        <a class="gumb" href="{{ url('/oglasi') }}">Počisti filtre</a>
+    </div>
+</form>
+
+%# ── Vrstica z rezultati ─────────────────────────────────────────────────
+<div class="vrstica-rezultatov">
+    <div class="stevilo-zadetkov">
+        Najdenih <strong>{{ '{:,}'.format(rezultat.skupaj).replace(',', '.') }}</strong> oglasov
+        % if rezultat.skupaj > 0:
+            · stran {{ rezultat.stran }} od {{ rezultat.stevilo_strani }}
+        % end
+    </div>
+</div>
+
+%# ── Kartice oglasov ─────────────────────────────────────────────────────
+% if not rezultat.oglasi:
+    <div class="plosca prazno">
+        <h3>Ni zadetkov</h3>
+        <p>Za izbrane filtre ni nobenega oglasa. Poskusi z manj omejitvami.</p>
+        <a class="gumb" href="{{ url('/oglasi') }}">Počisti filtre</a>
+    </div>
+% else:
+    <div class="oglasi-mreza">
+    % for o in rezultat.oglasi:
+        <article class="oglas-kartica">
+            <div class="oglas-naslov">
+                <a href="{{ url('/oglas/%d' % o.oglas.id_oglasa) }}">{{ o.oglas.naslov }}</a>
+            </div>
+
+            <div class="oglas-lokacija">
+                {{ o.lokacija.prikaz }}
+                % if o.lokacija.drzava:
+                    <span class="znacka znacka-{{ o.lokacija.drzava.lower() }}">{{ o.lokacija.drzava }}</span>
+                % end
+            </div>
+
+            <div class="oglas-cena">
+                {{ '{:,.0f}'.format(float(o.oglas.cena)).replace(',', '.') }} €
+                <small>/ mesec</small>
+                % if o.cena_na_m2:
+                    <small>· {{ '{:.1f}'.format(float(o.cena_na_m2)) }} €/m²</small>
+                % end
+            </div>
+
+            <div class="oglas-lastnosti">
+                <span class="lastnost">{{ '{:.0f}'.format(float(o.nepremicnina.m2)) }} m²</span>
+                % if o.nepremicnina.stevilo_sob_opis:
+                    <span class="lastnost">{{ o.nepremicnina.stevilo_sob_opis }}</span>
+                % end
+                % if o.nepremicnina.leto_gradnje:
+                    <span class="lastnost">l. {{ o.nepremicnina.leto_gradnje }}</span>
+                % end
+                % if o.nepremicnina.nadstropje:
+                    <span class="lastnost">nadstr. {{ o.nepremicnina.nadstropje }}</span>
+                % end
+                <span class="lastnost">{{ o.vrsta.ime_vrste }}</span>
+            </div>
+        </article>
+    % end
+    </div>
+
+    %# ── Paginacija ──────────────────────────────────────────────────────
+    %# Vse trenutne filtre moramo prenesti tudi v povezave na druge strani,
+    %# sicer bi se ob kliku na "Naprej" filtri izgubili.
+    % skupni = dict(q=filtri.iskanje, id_vrste=filtri.id_vrste, id_regije=filtri.id_regije,
+    %               drzava=filtri.drzava, cena_min=filtri.cena_min, cena_max=filtri.cena_max,
+    %               m2_min=filtri.m2_min, m2_max=filtri.m2_max, sobe_min=filtri.sobe_min,
+    %               leto_min=filtri.leto_min, urejanje=filtri.urejanje, na_stran=na_stran)
+    <div class="paginacija">
+        <a class="gumb {{ '' if rezultat.ima_prejsnjo else 'gumb-neaktiven' }}"
+           href="{{ url('/oglasi', stran=1, **skupni) }}">« Prva</a>
+
+        <a class="gumb {{ '' if rezultat.ima_prejsnjo else 'gumb-neaktiven' }}"
+           href="{{ url('/oglasi', stran=rezultat.stran - 1, **skupni) }}">‹ Nazaj</a>
+
+        <span class="stanje">{{ rezultat.stran }} / {{ rezultat.stevilo_strani }}</span>
+
+        <a class="gumb {{ '' if rezultat.ima_naslednjo else 'gumb-neaktiven' }}"
+           href="{{ url('/oglasi', stran=rezultat.stran + 1, **skupni) }}">Naprej ›</a>
+
+        <a class="gumb {{ '' if rezultat.ima_naslednjo else 'gumb-neaktiven' }}"
+           href="{{ url('/oglasi', stran=rezultat.stevilo_strani, **skupni) }}">Zadnja »</a>
+    </div>
+% end

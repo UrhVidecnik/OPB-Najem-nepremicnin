@@ -1,0 +1,14 @@
+%# ===========================================================================
+%#  Presentation/views/napaka.html – prijazna stran za napake
+%#  Prejme: naslov (str), sporocilo (str)
+%# ===========================================================================
+% rebase('osnova.html', naslov_strani=naslov)
+
+<div class="plosca prazno" style="margin-top:40px">
+    <h1>{{ naslov }}</h1>
+    <p>{{ sporocilo }}</p>
+    <p style="margin-top:18px">
+        <a class="gumb gumb-glavni" href="{{ url('/') }}">Na domačo stran</a>
+        <a class="gumb" href="{{ url('/oglasi') }}">Na seznam oglasov</a>
+    </p>
+</div>

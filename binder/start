@@ -1,0 +1,24 @@
+#!/bin/bash
+# ---------------------------------------------------------------------------
+#  Zagonska skripta za Binder (mybinder.org).
+#  Binder to datoteko požene, ko se okolje zgradi.
+#
+#  BOTTLE_ROOT je nujen: na Binderju aplikacija ne teče na korenu strežnika,
+#  ampak pod /user/<nekaj>/proxy/8080/. Naša funkcija url() to predpono
+#  doda vsem povezavam, sicer bi bile vse povezave polomljene.
+#
+#  DB_PORT=443 in ne 5432: Binderjev požarni zid odhodne povezave dovoli
+#  samo na vratih 80 in 443. FMF baza posluša tudi na 443.
+# ---------------------------------------------------------------------------
+export BOTTLE_PORT=8080
+export BOTTLE_RELOADER=False
+export BOTTLE_ROOT=${JUPYTERHUB_SERVICE_PREFIX}proxy/${BOTTLE_PORT}/
+
+export DB_NAME=sem2026_urhvid
+export DB_HOST=baza.fmf.uni-lj.si
+export DB_USER=javnost
+export DB_PASSWORD=javnogeslo
+export DB_PORT=443
+
+python app.py &
+exec "$@"

@@ -1,0 +1,2 @@
+#!/bin/bash
+echo "postBuild končan – okolje za OPB Najem nepremičnin je pripravljeno."

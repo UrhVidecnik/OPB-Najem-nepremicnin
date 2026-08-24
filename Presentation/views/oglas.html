@@ -1,0 +1,125 @@
+%# ===========================================================================
+%#  Presentation/views/oglas.html – podrobnosti enega oglasa
+%#  Prejme: o (OglasDTO), podobni (seznam OglasDTO)
+%# ===========================================================================
+% rebase('osnova.html', naslov_strani=o.oglas.naslov)
+
+<p style="margin-bottom:12px">
+    <a href="{{ url('/oglasi') }}">‹ Nazaj na seznam oglasov</a>
+</p>
+
+<h1>{{ o.oglas.naslov }}</h1>
+<p class="podnaslov">
+    {{ o.lokacija.prikaz }}
+    % if o.lokacija.drzava:
+        <span class="znacka znacka-{{ o.lokacija.drzava.lower() }}">{{ o.lokacija.drzava }}</span>
+    % end
+</p>
+
+<div class="podrobnosti-mreza">
+
+    %# ── Levi stolpec: opis ───────────────────────────────────────────────
+    <div>
+        <div class="plosca">
+            <h3>Opis</h3>
+            % if o.nepremicnina.opis:
+                <p class="opis-besedilo">{{ o.nepremicnina.opis }}</p>
+            % else:
+                <p style="color:var(--barva-tiho)">Za ta oglas opisa ni.</p>
+            % end
+        </div>
+
+        % if podobni:
+        <h2>Podobni oglasi v isti regiji</h2>
+        <div class="oglasi-mreza">
+        % for p in podobni:
+            <article class="oglas-kartica">
+                <div class="oglas-naslov">
+                    <a href="{{ url('/oglas/%d' % p.oglas.id_oglasa) }}">{{ p.oglas.naslov }}</a>
+                </div>
+                <div class="oglas-lokacija">{{ p.lokacija.prikaz }}</div>
+                <div class="oglas-cena">
+                    {{ '{:,.0f}'.format(float(p.oglas.cena)).replace(',', '.') }} €
+                    <small>· {{ '{:.0f}'.format(float(p.nepremicnina.m2)) }} m²</small>
+                </div>
+            </article>
+        % end
+        </div>
+        % end
+    </div>
+
+    %# ── Desni stolpec: številke in dejanja ───────────────────────────────
+    <div>
+        <div class="plosca">
+            <div class="oglas-cena" style="font-size:30px; margin-bottom:4px">
+                {{ '{:,.0f}'.format(float(o.oglas.cena)).replace(',', '.') }} €
+                <small>/ mesec</small>
+            </div>
+            % if o.cena_na_m2:
+                <p style="color:var(--barva-tiho); margin-top:0">
+                    {{ '{:.2f}'.format(float(o.cena_na_m2)) }} € na kvadratni meter
+                </p>
+            % end
+
+            <table class="lastnosti-tabela">
+                <tr><th>Vrsta</th>       <td>{{ o.vrsta.ime_vrste }}</td></tr>
+                <tr><th>Površina</th>    <td>{{ '{:.1f}'.format(float(o.nepremicnina.m2)) }} m²</td></tr>
+                % if o.nepremicnina.stevilo_sob_opis:
+                <tr><th>Sobe</th>        <td>{{ o.nepremicnina.stevilo_sob_opis }}</td></tr>
+                % end
+                % if o.nepremicnina.leto_gradnje:
+                <tr><th>Leto gradnje</th><td>{{ o.nepremicnina.leto_gradnje }}</td></tr>
+                % end
+                % if o.nepremicnina.nadstropje:
+                <tr><th>Nadstropje</th>  <td>{{ o.nepremicnina.nadstropje }}</td></tr>
+                % end
+                % if o.lokacija.obcina:
+                <tr><th>Občina</th>      <td>{{ o.lokacija.obcina }}</td></tr>
+                % end
+                % if o.lokacija.upravna_enota:
+                <tr><th>Upravna enota</th><td>{{ o.lokacija.upravna_enota }}</td></tr>
+                % end
+                % if o.lokacija.ime_regije:
+                <tr><th>Regija</th>      <td>{{ o.lokacija.ime_regije }}</td></tr>
+                % end
+                <tr><th>Vir</th>         <td>{{ o.vir.ime_vira }}</td></tr>
+                % if o.oglas.datum_zajema:
+                <tr><th>Zajeto</th>      <td>{{ o.oglas.datum_zajema.strftime('%d. %m. %Y') }}</td></tr>
+                % end
+            </table>
+
+            % if o.oglas.url_oglasa:
+                <p style="margin-top:14px">
+                    <a class="gumb gumb-glavni" href="{{ o.oglas.url_oglasa }}"
+                       target="_blank" rel="noopener noreferrer">
+                        Odpri izvirni oglas ↗
+                    </a>
+                </p>
+            % end
+        </div>
+
+        %# Gumba za urejanje/brisanje vidita samo prijavljena uporabnika.
+        % if uporabnik:
+        <div class="plosca">
+            <h3>Urejanje</h3>
+            <div style="display:flex; gap:8px; flex-wrap:wrap">
+                <a class="gumb" href="{{ url('/uredi/%d' % o.oglas.id_oglasa) }}">Uredi oglas</a>
+
+                % if vloga == 'admin':
+                    %# Brisanje pošljemo s POST obrazcem, ne z navadno povezavo.
+                    <form method="post" action="{{ url('/izbrisi/%d' % o.oglas.id_oglasa) }}"
+                          onsubmit="return confirm('Res želiš izbrisati ta oglas?');"
+                          style="display:inline">
+                        <button type="submit" class="gumb gumb-nevaren">Izbriši</button>
+                    </form>
+                % end
+            </div>
+            % if vloga != 'admin':
+                <p class="drobno" style="margin-top:8px; color:var(--barva-tiho)">
+                    Brisanje je na voljo samo skrbnikom (admin).
+                </p>
+            % end
+        </div>
+        % end
+    </div>
+</div>
