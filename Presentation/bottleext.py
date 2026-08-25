@@ -1,35 +1,10 @@
-"""
-============================================================================
- OPB – Najem nepremičnin
- Datoteka: Presentation/bottleext.py
+"""Dopolnitve ogrodja Bottle.
 
- Majhna nadgradnja ogrodja Bottle. Tri stvari, ki jih potrebujemo:
-
- 1) TEMPLATE_PATH
-    Bottle predloge privzeto išče v mapi ./views. Naše so v
-    ./Presentation/views, zato to pot dodamo na začetek seznama.
-
- 2) PODPISANI PIŠKOTKI
-    Piškotek je navaden zapis v brskalniku uporabnika. Če bi vanj brez
-    zaščite zapisali "vloga=admin", bi si lahko vsak z orodji za razvijalce
-    sam nastavil "vloga=admin" in dobil pravice za brisanje oglasov.
-    Zato piškotke PODPIŠEMO: Bottle jim doda zgoščeno vrednost, izračunano
-    s skrivnim ključem, in ob branju podpis preveri. Spremenjen piškotek
-    tako ne prestane preverjanja in ga preberemo kot "ni prijavljen".
-
- 3) url()
-    Bottle ima svojo funkcijo bottle.url(), ki pa pričakuje IME poti
-    (npr. url('index')), ne poti same. Če ji podaš url('/'), vrže
-    RouteBuildError. Ker je v predlogah veliko bolj naravno pisati
-    url('/oglasi'), naredimo svojo funkcijo, ki dela s POTMI.
-
-    Poleg tega poskrbi za predpono BOTTLE_ROOT. To potrebujemo na
-    Binderju, kjer aplikacija ne teče na korenu strežnika, ampak
-    nekje pod /user/xy/proxy/8080/ – brez predpone bi bile vse
-    povezave na strani polomljene.
-
- V app.py potem uvozimo vse iz te datoteke namesto neposredno iz bottle.
-============================================================================
+- pove, da so predloge v Presentation/views,
+- podpisani piškotki: spremenjen piškotek ne prestane preverjanja podpisa,
+  zato si uporabnik ne more sam nastaviti vloga=admin,
+- url(), ki dela s potmi (url('/oglasi')) namesto z imeni poti in doda
+  predpono BOTTLE_ROOT, ki jo potrebujemo na Binderju.
 """
 
 import os
@@ -54,14 +29,9 @@ TEMPLATE_PATH.insert(0, "./Presentation/views")
 # Predpona poti (prazna pri lokalnem zagonu).
 KOREN = os.environ.get("BOTTLE_ROOT", "")
 
-# ── Podpisani piškotki ──────────────────────────────────────────────────────
-#
-# Skrivni ključ za podpisovanje. V pravem produkcijskem okolju bi bil vedno
-# le v okoljski spremenljivki; za šolski projekt je privzeta vrednost tu,
-# da aplikacija deluje takoj po kloniranju.
-#
-# Ko ključ zamenjaš, vsi obstoječi piškotki nehajo veljati in se morajo
-# uporabniki znova prijaviti – kar je pravzaprav zaželeno.
+# Skrivni ključ za podpisovanje piškotkov. V pravem okolju bi bil samo v
+# okoljski spremenljivki; tu je privzeta vrednost, da aplikacija deluje takoj po
+# kloniranju. Ob zamenjavi ključa se morajo uporabniki znova prijaviti.
 SKRIVNI_KLJUC = os.environ.get("SECRET_KEY", "opb-najem-nepremicnin-2026")
 
 # Koliko časa velja prijava (8 ur).

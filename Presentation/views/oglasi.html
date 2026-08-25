@@ -1,15 +1,12 @@
-%# ===========================================================================
-%#  Presentation/views/oglasi.html – seznam oglasov z filtri in paginacijo
-%#
-%#  Prejme: rezultat (StranDTO), filtri (OglasFiltriDTO),
-%#          vrste, regije, viri, na_stran
-%# ===========================================================================
+%# Seznam oglasov s filtri in paginacijo. Prejme: rezultat (StranDTO),
+%# filtri (OglasFiltriDTO), vrste, regije, viri, na_stran.
+
 % rebase('osnova.html', naslov_strani='Oglasi')
 
 <h1>Oglasi za najem</h1>
 <p class="podnaslov">Poišči nepremičnino po ceni, velikosti, lokaciji ali ključni besedi.</p>
 
-%# ── Obrazec s filtri ────────────────────────────────────────────────────
+%# Obrazec s filtri
 %# method="get": filtri se zapišejo v naslovno vrstico, zato je stran
 %# z izbranimi filtri mogoče shraniti med zaznamke ali deliti s prijateljem.
 <form class="plosca" method="get" action="{{ url('/oglasi') }}">
@@ -120,7 +117,7 @@
     </div>
 </form>
 
-%# ── Vrstica z rezultati ─────────────────────────────────────────────────
+%# Vrstica z rezultati
 <div class="vrstica-rezultatov">
     <div class="stevilo-zadetkov">
         Najdenih <strong>{{ '{:,}'.format(rezultat.skupaj).replace(',', '.') }}</strong> oglasov
@@ -130,7 +127,7 @@
     </div>
 </div>
 
-%# ── Kartice oglasov ─────────────────────────────────────────────────────
+%# Kartice oglasov
 % if not rezultat.oglasi:
     <div class="plosca prazno">
         <h3>Ni zadetkov</h3>
@@ -177,7 +174,7 @@
     % end
     </div>
 
-    %# ── Paginacija ──────────────────────────────────────────────────────
+    %# Paginacija
     %# Vse trenutne filtre moramo prenesti tudi v povezave na druge strani,
     %# sicer bi se ob kliku na "Naprej" filtri izgubili.
     % skupni = dict(q=filtri.iskanje, id_vrste=filtri.id_vrste, id_regije=filtri.id_regije,

@@ -1,11 +1,7 @@
-# Knjižnice, ki jih potrebuje SAMO scraper (Scrape Data/scrape_all_data.py).
-# Za spletno aplikacijo jih ne rabiš – namesti jih le, če boš znova pobiral podatke.
-#
+# Potrebno samo za scraper, za spletno aplikacijo ne.
 #   pip install -r "Scrape Data/requirements.txt"
 #   playwright install firefox
 
-beautifulsoup4>=4.12.0  # razčlenjevanje HTML
-playwright>=1.40.0      # brskalnik brez okna (obide zaščito pred roboti)
-python-dotenv>=1.0.0    # branje nastavitev iz .env
-pandas>=2.0.0           # pomoč pri obdelavi CSV
-requests>=2.31.0
+beautifulsoup4>=4.12.0
+playwright>=1.40.0
+python-dotenv>=1.0.0

@@ -1,18 +1,8 @@
--- ============================================================================
---  OPB – Najem nepremičnin
---  Datoteka: Data/create_database.sql
---
---  Ta datoteka ustvari CELOTNO shemo baze od začetka.
---  Zaženeš jo lahko:
---    a) iz Pythona:  python init_db.py
---    b) ročno:       psql -h baza.fmf.uni-lj.si -U urhvid -d sem2026_urhvid -f Data/create_database.sql
---
---  POZOR: spodnji DROP ukazi POBRIŠEJO obstoječe tabele in vse podatke v njih.
---         Če tega nočeš, zakomentiraj razdelek 0.
--- ============================================================================
+-- Shema baze: tabele, indeksi in pogled oglas_pregled.
+-- Zagon: python init_db.py  (ali psql -h ... -f Data/create_database.sql)
+-- Pozor: razdelek 0 pobriše obstoječe tabele in vse podatke v njih.
 
-
--- ── 0. Brisanje obstoječih objektov ─────────────────────────────────────────
+-- 0. Brisanje obstoječih objektov
 -- Vrstni red je pomemben: najprej pogled, nato tabele od "otrok" proti "staršem".
 -- CASCADE poskrbi, da se pobrišejo tudi tuji ključi, ki kažejo na tabelo.
 
@@ -27,7 +17,7 @@ DROP TABLE IF EXISTS vir                CASCADE;
 DROP TABLE IF EXISTS uporabnik          CASCADE;
 
 
--- ── 1. VIR ──────────────────────────────────────────────────────────────────
+-- 1. VIR
 -- Od kod je oglas pobran (nepremicnine.net, bolha.com, ...).
 -- Šifrant: majhna tabela z nekaj vrsticami, na katero se sklicujejo oglasi.
 
@@ -40,7 +30,7 @@ CREATE TABLE vir (
 COMMENT ON TABLE vir IS 'Spletni portal, s katerega je bil oglas pobran.';
 
 
--- ── 2. VRSTA NEPREMIČNINE ───────────────────────────────────────────────────
+-- 2. VRSTA NEPREMIČNINE
 -- Stanovanje, Hiša, Poslovni prostor, Garaža, ...
 
 CREATE TABLE vrsta_nepremicnine (
@@ -51,7 +41,7 @@ CREATE TABLE vrsta_nepremicnine (
 COMMENT ON TABLE vrsta_nepremicnine IS 'Šifrant vrst nepremičnin (Stanovanje, Hiša, ...).';
 
 
--- ── 3. REGIJA ───────────────────────────────────────────────────────────────
+-- 3. REGIJA
 -- Regijo smo ločili v svojo tabelo, ker se v podatkih ponovi ZELO velikokrat
 -- (npr. "Ljubljana mesto" pri več sto oglasih) – to je klasična normalizacija.
 -- Država je lastnost regije: nepremicnine.net oglašuje tudi hrvaške nepremičnine,
@@ -69,7 +59,7 @@ CREATE TABLE regija (
 COMMENT ON TABLE regija IS 'Regija (statistična / oglaševalska) skupaj z državo.';
 
 
--- ── 4. LOKACIJA ─────────────────────────────────────────────────────────────
+-- 4. LOKACIJA
 -- Ena vrstica = ena konkretna kombinacija upravna enota + občina + naselje
 -- znotraj neke regije. Scraper pobere prav to hierarhijo z detajlne strani
 -- oglasa ("Regija: Ljubljana mesto | Upravna enota: ... | Občina: ... | Naselje: ...").
@@ -102,7 +92,7 @@ CREATE UNIQUE INDEX uq_lokacija ON lokacija (
 COMMENT ON TABLE lokacija IS 'Konkretna lokacija: upravna enota + občina + naselje znotraj regije.';
 
 
--- ── 5. NEPREMIČNINA ─────────────────────────────────────────────────────────
+-- 5. NEPREMIČNINA
 -- Fizična nepremičnina: koliko kvadratov, koliko sob, katero leto zgrajena.
 -- Ločena od oglasa zato, ker je ista nepremičnina lahko oglaševana večkrat
 -- (drug portal, druga cena, čez pol leta znova).
@@ -136,7 +126,7 @@ CREATE TABLE nepremicnina (
 COMMENT ON TABLE nepremicnina IS 'Fizična nepremičnina (kvadratura, sobe, leto gradnje, lokacija).';
 
 
--- ── 6. OGLAS ────────────────────────────────────────────────────────────────
+-- 6. OGLAS
 -- Konkretna objava za najem: naslov, cena, povezava.
 
 CREATE TABLE oglas (
@@ -171,7 +161,7 @@ CREATE TABLE oglas (
 COMMENT ON TABLE oglas IS 'Objava za najem: naslov, cena, povezava, datum.';
 
 
--- ── 7. UPORABNIK ────────────────────────────────────────────────────────────
+-- 7. UPORABNIK
 -- Za prijavo v aplikacijo. Geslo NIKOLI ni shranjeno v čistopisu –
 -- shranimo bcrypt zgoščeno vrednost (hash).
 
@@ -187,7 +177,7 @@ CREATE TABLE uporabnik (
 COMMENT ON TABLE uporabnik IS 'Uporabniki aplikacije (bcrypt gesla, vlogi admin/uporabnik).';
 
 
--- ── 8. INDEKSI ──────────────────────────────────────────────────────────────
+-- 8. INDEKSI
 -- Indeksi na stolpcih, po katerih v aplikaciji filtriramo in sortiramo.
 -- Brez njih mora Postgres pri vsakem filtru prebrati vseh ~2700 vrstic.
 
@@ -203,7 +193,7 @@ CREATE INDEX idx_lokacija_regija      ON lokacija (id_regije);
 CREATE INDEX idx_oglas_naslov_lower   ON oglas (lower(naslov));
 
 
--- ── 9. POGLED oglas_pregled ─────────────────────────────────────────────────
+-- 9. POGLED oglas_pregled
 -- Pogled (VIEW) je shranjena poizvedba, ki se obnaša kot tabela.
 -- Vse podatke o oglasu združi na eno mesto, da nam v Pythonu ni treba
 -- vsakič pisati petih JOIN-ov.

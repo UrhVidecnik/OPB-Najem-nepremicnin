@@ -1,8 +1,6 @@
-%# ===========================================================================
-%#  Presentation/views/statistika.html – analiza podatkov
-%#  Prejme: statistika, po_regijah, po_vrstah, histogram, najvecji,
-%#          filtri, vrste, regije
-%# ===========================================================================
+%# Analiza podatkov. Prejme: statistika, po_regijah, po_vrstah, histogram,
+%# najvecji, filtri, vrste, regije.
+
 % rebase('osnova.html', naslov_strani='Statistika')
 
 <h1>Statistika najemnin</h1>
@@ -11,7 +9,7 @@
     COUNT, PERCENTILE_CONT) neposredno v podatkovni bazi.
 </p>
 
-%# ── Filtri (ista logika kot na strani z oglasi, le krajše) ──────────────
+%# Filtri (ista logika kot na strani z oglasi, le krajše)
 <form class="plosca" method="get" action="{{ url('/statistika') }}">
     <div class="filtri-mreza">
         <div class="polje">
@@ -63,7 +61,7 @@
     </div>
 % else:
 
-%# ── Osnovne številke ────────────────────────────────────────────────────
+%# Osnovne številke
 <h2>Osnovni kazalniki</h2>
 <div class="stat-mreza">
     <div class="stat-kartica">
@@ -100,7 +98,7 @@
     </div>
 </div>
 
-%# ── Histogram cen ───────────────────────────────────────────────────────
+%# Histogram cen
 %# Diagram je narejen iz navadnih <div> elementov – višino vsakega stolpca
 %# izračunamo kot delež najvišjega stolpca. Nobene JS knjižnice ni potrebne.
 % if histogram:
@@ -123,7 +121,7 @@
 </div>
 % end
 
-%# ── Po regijah ──────────────────────────────────────────────────────────
+%# Po regijah
 % if po_regijah:
 <h2>Po regijah <span class="drobno" style="font-weight:400">(samo regije z vsaj 5 oglasi)</span></h2>
 <div class="plosca">
@@ -158,7 +156,7 @@
 </div>
 % end
 
-%# ── Po vrstah ───────────────────────────────────────────────────────────
+%# Po vrstah
 % if po_vrstah:
 <h2>Po vrstah nepremičnin</h2>
 <div class="plosca">

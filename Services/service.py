@@ -1,20 +1,8 @@
-"""
-============================================================================
- OPB – Najem nepremičnin
- Datoteka: Services/service.py
+"""Aplikacijski nivo med app.py in bazo.
 
- APLIKACIJSKI NIVO (business logic).
-
- Vmesni sloj med spletno aplikacijo (app.py) in bazo (Data/repository.py).
-
- Naloge tega nivoja:
-   - PREVERI vhodne podatke, preden gredo v bazo (validacija);
-   - PRETVORI podatke iz spletnega obrazca (vse je niz!) v prave tipe;
-   - združi več klicev repozitorija v eno smiselno operacijo
-     (npr. "dodaj oglas" = ustvari lokacijo + nepremičnino + oglas).
-
- Pravilo: app.py NE kliče Repository neposredno, vedno gre prek Service.
-============================================================================
+Preveri in pretvori podatke iz spletnih obrazcev (kjer je vse niz) ter
+združi več klicev repozitorija v eno operacijo - "dodaj oglas" pomeni
+lokacija + nepremičnina + oglas.
 """
 
 from typing import List, Optional
@@ -47,10 +35,8 @@ class Service:
         # kjer podtaknemo lažni repozitorij); sicer si ga ustvarimo sami.
         self.repository = repository or Repository()
 
-    # ── Pretvorbe iz spletnega obrazca ──────────────────────────────────────
-    #
-    # Iz HTML obrazca vedno pride NIZ. Prazno polje je prazen niz "".
-    # Te tri metode niz varno pretvorijo v število ali None.
+    # Iz obrazca vedno pride niz, prazno polje pa prazen niz.
+    # Naslednje tri metode ga varno pretvorijo v število ali None.
 
     @staticmethod
     def v_int(vrednost) -> Optional[int]:
@@ -80,7 +66,7 @@ class Service:
         v = str(vrednost).strip()
         return v if v else None
 
-    # ── Sestavljanje filtrov ────────────────────────────────────────────────
+    # Sestavljanje filtrov
 
     def sestavi_filtre(self, obrazec) -> OglasFiltriDTO:
         """Iz parametrov URL-ja/obrazca sestavi OglasFiltriDTO.
@@ -141,7 +127,7 @@ class Service:
         if filtri.leto_min is not None and not (1200 <= filtri.leto_min <= 2100):
             filtri.leto_min = None
 
-    # ── Branje oglasov ──────────────────────────────────────────────────────
+    # Branje oglasov
 
     def stran_oglasov(
         self,
@@ -164,7 +150,7 @@ class Service:
         self.preveri_filtre(filtri)
         return self.repository.prestej_oglase(filtri)
 
-    # ── Statistika ──────────────────────────────────────────────────────────
+    # Statistika
 
     def statistika(self, filtri: Optional[OglasFiltriDTO] = None) -> StatistikaDTO:
         self.preveri_filtre(filtri)
@@ -191,7 +177,7 @@ class Service:
     def najdrazji_najcenejsi(self, koliko: int = 5) -> dict:
         return self.repository.najdrazji_najcenejsi(max(1, min(koliko, 20)))
 
-    # ── Šifranti (spustni seznami v obrazcih) ───────────────────────────────
+    # Šifranti (spustni seznami v obrazcih)
 
     def vrste(self) -> List[VrstaNepremicnine]:
         return self.repository.seznam_vrst()
@@ -207,7 +193,7 @@ class Service:
     def viri(self) -> List[Vir]:
         return self.repository.seznam_virov()
 
-    # ── Pisanje: dodajanje in urejanje oglasov ──────────────────────────────
+    # Pisanje: dodajanje in urejanje oglasov
 
     def dodaj_oglas(
         self,
@@ -350,7 +336,7 @@ class Service:
             raise ValueError("ID oglasa je obvezen.")
         return self.repository.izbrisi_oglas(id_oglasa)
 
-    # ── Šifranti: dodajanje ─────────────────────────────────────────────────
+    # Šifranti: dodajanje
 
     def dodaj_vir(self, ime_vira: str, url_vira: Optional[str] = None) -> Vir:
         ime_vira = self.v_besedilo(ime_vira)

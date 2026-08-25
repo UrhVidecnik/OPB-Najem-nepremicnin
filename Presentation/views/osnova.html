@@ -1,16 +1,7 @@
-%# ===========================================================================
-%#  Data/Presentation/views/osnova.html
-%#
-%#  SKUPNA OGRODNA PREDLOGA (layout).
-%#  Vse ostale strani jo uporabijo z:  % rebase('osnova.html', naslov_strani='...')
-%#  Bottle najprej zgenerira vsebino podstrani in jo tukaj vstavi na mesto
-%#  spremenljivke `base`.
-%#
-%#  Opomba o zapisu:
-%#    % vrstica   -> Python koda
-%#    {{ izraz }} -> izpis vrednosti (Bottle jo SAM ubeži proti XSS)
-%#    {{! izraz }} -> izpis BREZ ubežanja (uporabljamo samo, kjer je nujno)
-%# ===========================================================================
+%# Skupna ogrodna predloga. Ostale strani jo uporabijo z
+%# % rebase('osnova.html', naslov_strani='...'), Bottle pa njihovo vsebino
+%# vstavi na mesto spremenljivke `base`.
+
 % setdefault('naslov_strani', 'Najem nepremičnin')
 % setdefault('uporabnik', None)
 % setdefault('vloga', None)

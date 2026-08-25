@@ -1,29 +1,12 @@
-"""
-============================================================================
- OPB – Najem nepremičnin
- Datoteka: Data/nalozi_v_bazo.py
+"""Uvoz oglasov iz CSV (scraper) v bazo.
 
- UVOZ podatkov iz scraperja (CSV) v PostgreSQL.
+    python -m Data.nalozi_v_bazo
+    python -m Data.nalozi_v_bazo --suho           # samo preveri, nič ne zapiše
+    python -m Data.nalozi_v_bazo --omejitev 100
 
- ZAGON (iz korenske mape projekta):
-     python -m Data.nalozi_v_bazo
-     python -m Data.nalozi_v_bazo --datoteka "Scrape Data/oglasi_full.csv"
-     python -m Data.nalozi_v_bazo --suho          # samo preveri, nič ne zapiše
-
- KAJ SKRIPTA NAREDI
-   1. prebere CSV, ki ga je pripravil Scrape Data/scrape_all_data.py
-   2. vsako vrstico OČISTI in PREVERI (cena, m2, leto, sobe ...)
-   3. ugotovi državo (SI / HR) iz regije oziroma iz URL-ja oglasa
-   4. napolni šifrante (vir, vrsta, regija, lokacija) – vsakega samo enkrat
-   5. vstavi nepremičnino in oglas
-   6. izpiše poročilo: koliko vstavljeno, koliko preskočeno in ZAKAJ
-
- IDEMPOTENTNOST
-   Oglas ima v bazi stolpec `zunanji_id` (ID oglasa na portalu) in omejitev
-   UNIQUE (id_vira, zunanji_id). Pred vstavljanjem preberemo vse že
-   obstoječe zunanje ID-je in take vrstice preskočimo.
-   => Skripto lahko poženeš kolikorkrat, podatki se NE bodo podvojili.
-============================================================================
+Oglas ima v bazi stolpec zunanji_id (ID oglasa na portalu) in omejitev
+UNIQUE (id_vira, zunanji_id), zato je uvoz idempotenten - skripto lahko
+poženeš večkrat in oglasi se ne podvojijo.
 """
 
 import argparse
@@ -38,7 +21,7 @@ from Data.models import Nepremicnina, Oglas
 from Data.repository import DB_NAME, DB_USER, JE_PISALNI_DOSTOP, Repository
 
 
-# ── Nastavitve ──────────────────────────────────────────────────────────────
+# Nastavitve
 
 KORENSKA_MAPA = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PRIVZETI_CSV = os.path.join(KORENSKA_MAPA, "Scrape Data", "oglasi_full.csv")
@@ -58,19 +41,12 @@ MIN_LETO, MAX_LETO = 1200, date.today().year + 5
 csv.field_size_limit(10_000_000)
 
 
-# ── Prepoznavanje države ────────────────────────────────────────────────────
-#
-# nepremicnine.net oglašuje tudi HRVAŠKE nepremičnine. Imena regij so pri
-# obojih zapisana v SLOVENŠČINI ("Splitsko-dalmatinska", "Mesto Zagreb"),
-# povezava do oglasa pa NE vsebuje nobene oznake države – preverjeno na vseh
-# 2690 oglasih. Edini zanesljiv razpoznavni znak je torej ime regije.
-#
-# Spodnja seznama sta sestavljena iz VSEH 27 imen, ki se pojavijo v
-# oglasi_full.csv (avgust 2026). Razdelitev da natanko 1428 SI + 1244 HR
-# + 18 oglasov brez regije.
-#
-# ČE SE V POROČILU POJAVI "NEZNANE REGIJE" (npr. po novem zajemu podatkov),
-# dodaj ime v ustrezni seznam spodaj – z MALIMI črkami.
+# nepremicnine.net oglašuje tudi hrvaške nepremičnine. Imena regij so pri obojih
+# zapisana v slovenščini ("Splitsko-dalmatinska", "Mesto Zagreb"), povezava do
+# oglasa pa države ne označuje, zato je edini razpoznavni znak ime regije.
+# Seznama zajameta vseh 27 imen iz oglasi_full.csv (1428 SI + 1244 HR + 18 brez
+# regije). Če uvoz javi neznano regijo, jo dodaj v ustrezen seznam z malimi
+# črkami.
 
 SLOVENSKE_REGIJE = {
     # 12 statističnih regij + ločeni Ljubljana mesto/okolica, kot jih
@@ -151,7 +127,7 @@ def doloci_drzavo(regija: str, url_oglasa: str = "") -> tuple:
     return "SI", False             # neprepoznano – javimo uporabniku
 
 
-# ── Pomožne funkcije za čiščenje ────────────────────────────────────────────
+# Pomožne funkcije za čiščenje
 
 def besedilo(vrednost: Optional[str]) -> Optional[str]:
     """Prazen niz ali same presledke pretvori v None (v bazi je to NULL)."""
@@ -188,7 +164,7 @@ def celo_stevilo(vrednost: Optional[str]) -> Optional[int]:
     return int(f) if f is not None else None
 
 
-# ── Glavni uvoz ─────────────────────────────────────────────────────────────
+# Glavni uvoz
 
 def uvozi(pot_csv: str, suho: bool = False, omejitev: Optional[int] = None) -> int:
     if not os.path.exists(pot_csv):

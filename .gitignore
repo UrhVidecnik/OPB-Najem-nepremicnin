@@ -1,42 +1,21 @@
-# ── Osebni dostop do baze (NIKOLI na GitHub!) ───────────────────────────────
+# Osebni dostop do baze
 Data/auth.py
-auth.py
 .env
-.env.*
 !.env.example
 
-# ── Virtualna okolja ────────────────────────────────────────────────────────
+# Virtualno okolje
 env/
 venv/
 .venv/
-ENV/
-env.bak/
-venv.bak/
 
-# ── Python ──────────────────────────────────────────────────────────────────
+# Python
 __pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-build/
-dist/
-*.egg-info/
-.pytest_cache/
-.mypy_cache/
-.ipynb_checkpoints/
+*.pyc
 
-# ── Urejevalniki in operacijski sistemi ─────────────────────────────────────
+# Urejevalniki in operacijski sistem
 .DS_Store
-Thumbs.db
-*.swp
 .idea/
-# .vscode NAMENOMA ni ignoriran – launch.json je del navodil profesorja.
+*.swp
 
-# ── Dnevniki in začasne datoteke ────────────────────────────────────────────
-*.log
-*.tmp
+# Scraper
 links.csv
-
-# ── Začasno ────────────────────────────────────────────────────────────────
-_to_delete/

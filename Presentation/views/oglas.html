@@ -1,7 +1,5 @@
-%# ===========================================================================
-%#  Presentation/views/oglas.html – podrobnosti enega oglasa
-%#  Prejme: o (OglasDTO), podobni (seznam OglasDTO)
-%# ===========================================================================
+%# Podrobnosti enega oglasa. Prejme: o (OglasDTO), podobni.
+
 % rebase('osnova.html', naslov_strani=o.oglas.naslov)
 
 <p style="margin-bottom:12px">
@@ -18,7 +16,7 @@
 
 <div class="podrobnosti-mreza">
 
-    %# ── Levi stolpec: opis ───────────────────────────────────────────────
+    %# Levi stolpec: opis
     <div>
         <div class="plosca">
             <h3>Opis</h3>
@@ -48,7 +46,7 @@
         % end
     </div>
 
-    %# ── Desni stolpec: številke in dejanja ───────────────────────────────
+    %# Desni stolpec: številke in dejanja
     <div>
         <div class="plosca">
             <div class="oglas-cena" style="font-size:30px; margin-bottom:4px">
@@ -98,7 +96,7 @@
             % end
         </div>
 
-        %# ── Skrbniška dejanja ────────────────────────────────────────────
+        %# Skrbniška dejanja
         %# Urejanje in brisanje sta na voljo samo vlogi 'admin' in samo,
         %# kadar ima povezava z bazo pravico pisanja. Gumbe skrijemo zato,
         %# da uporabnik ne klikne na nekaj, kar bo tako ali tako zavrnjeno –

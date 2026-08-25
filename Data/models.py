@@ -1,26 +1,8 @@
-"""
-============================================================================
- OPB – Najem nepremičnin
- Datoteka: Data/models.py
+"""Podatkovni modeli.
 
- PODATKOVNI MODELI.
-
- Tu so opisane "oblike" podatkov, s katerimi delamo v Pythonu.
- Vsak razred ustreza eni tabeli v bazi (razen razredov s končnico DTO).
-
- Zakaj @dataclass?
-   Namesto da bi pisali __init__, __repr__ in __eq__ na roko, nam jih
-   Python zgenerira sam. Namesto slovarjev (kjer se tipkarska napaka v
-   ključu odkrije šele ob zagonu) dobimo prave atribute z avtodopolnjevanjem.
-
- Zakaj @dataclass_json?
-   Doda metodi .to_json() in .from_json(). Uporabno za razhroščevanje in
-   za morebiten JSON API.
-
- DTO = Data Transfer Object. To NI tabela v bazi, ampak zavitek, v katerega
- spravimo podatke iz več tabel skupaj (npr. oglas + nepremičnina + lokacija),
- da jih lahko naenkrat podamo predlogi HTML.
-============================================================================
+Vsak razred ustreza eni tabeli v bazi. Razredi s končnico DTO niso tabele,
+ampak združujejo podatke iz več tabel skupaj (npr. oglas + nepremičnina +
+lokacija), da jih lahko naenkrat podamo predlogi HTML.
 """
 
 from dataclasses import dataclass, field
@@ -30,7 +12,7 @@ from typing import List, Optional
 from dataclasses_json import dataclass_json
 
 
-# ── 1. VIR ──────────────────────────────────────────────────────────────────
+# 1. VIR
 
 @dataclass_json
 @dataclass
@@ -42,7 +24,7 @@ class Vir:
     url_vira: Optional[str] = field(default=None)
 
 
-# ── 2. VRSTA NEPREMIČNINE ───────────────────────────────────────────────────
+# 2. VRSTA NEPREMIČNINE
 
 @dataclass_json
 @dataclass
@@ -53,7 +35,7 @@ class VrstaNepremicnine:
     ime_vrste: str = field(default="")
 
 
-# ── 3. REGIJA ───────────────────────────────────────────────────────────────
+# 3. REGIJA
 
 @dataclass_json
 @dataclass
@@ -65,8 +47,7 @@ class Regija:
     drzava: str = field(default="SI")
 
     def __post_init__(self):
-        # __post_init__ se pokliče takoj po __init__ – idealno mesto za
-        # preprosto preverjanje, da v bazo ne pošljemo nesmisla.
+        # preverimo, da v bazo ne pošljemo nesmisla
         if self.drzava not in ("SI", "HR"):
             raise ValueError(f"Neveljavna država: {self.drzava!r} (dovoljeno: SI, HR)")
 
@@ -76,7 +57,7 @@ class Regija:
         return f"{self.ime_regije} ({self.drzava})"
 
 
-# ── 4. LOKACIJA ─────────────────────────────────────────────────────────────
+# 4. LOKACIJA
 
 @dataclass_json
 @dataclass
@@ -110,7 +91,7 @@ class Lokacija:
         return ", ".join(deli) if deli else "Neznana lokacija"
 
 
-# ── 5. NEPREMIČNINA ─────────────────────────────────────────────────────────
+# 5. NEPREMIČNINA
 
 @dataclass_json
 @dataclass
@@ -141,7 +122,7 @@ class Nepremicnina:
             raise ValueError("Leto gradnje mora biti med 1200 in 2100.")
 
 
-# ── 6. OGLAS ────────────────────────────────────────────────────────────────
+# 6. OGLAS
 
 @dataclass_json
 @dataclass
@@ -167,7 +148,7 @@ class Oglas:
             raise ValueError("Naslov oglasa ne sme biti prazen.")
 
 
-# ── 7. UPORABNIK ────────────────────────────────────────────────────────────
+# 7. UPORABNIK
 
 @dataclass_json
 @dataclass
@@ -184,9 +165,7 @@ class Uporabnik:
         return self.vloga == "admin"
 
 
-# ============================================================================
-#  DTO razredi – ti NISO tabele v bazi
-# ============================================================================
+# DTO razredi – ti NISO tabele v bazi
 
 @dataclass_json
 @dataclass

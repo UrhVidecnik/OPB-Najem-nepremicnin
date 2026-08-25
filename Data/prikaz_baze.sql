@@ -1,17 +1,8 @@
--- ============================================================================
---  OPB – Najem nepremičnin
---  Datoteka: Data/prikaz_baze.sql
---
---  Zbirka poizvedb za PREDSTAVITEV projekta.
---  Poganjaj jih po eno naenkrat (v pgAdmin, DBeaver ali psql).
---
---  Poizvedbe so razvrščene od preprostih proti zahtevnejšim in pokrivajo:
---  JOIN, WHERE, GROUP BY, HAVING, agregatne funkcije, podpoizvedbe,
---  okenske funkcije (window functions), CTE in pogled.
--- ============================================================================
+-- Poizvedbe za predstavitev projekta; poganjaj jih po eno naenkrat
+-- (pgAdmin, DBeaver ali psql). Razvrščene so od preprostih proti zahtevnejšim:
+-- JOIN, GROUP BY, HAVING, podpoizvedbe, okenske funkcije, CTE in pogled.
 
-
--- ── 1. Koliko podatkov sploh imamo? ─────────────────────────────────────────
+-- 1. Koliko podatkov sploh imamo?
 SELECT 'oglas'              AS tabela, COUNT(*) AS stevilo FROM oglas
 UNION ALL SELECT 'nepremicnina',       COUNT(*) FROM nepremicnina
 UNION ALL SELECT 'lokacija',           COUNT(*) FROM lokacija
@@ -22,7 +13,7 @@ UNION ALL SELECT 'uporabnik',          COUNT(*) FROM uporabnik
 ORDER BY stevilo DESC;
 
 
--- ── 2. Pregled oglasov prek pogleda oglas_pregled ──────────────────────────
+-- 2. Pregled oglasov prek pogleda oglas_pregled
 -- Pogled nam prihrani pisanje petih JOIN-ov.
 SELECT
     id_oglasa      AS "ID",
@@ -39,7 +30,7 @@ ORDER BY cena DESC
 LIMIT 20;
 
 
--- ── 3. Isto brez pogleda – da vidimo, kaj pogled skriva ────────────────────
+-- 3. Isto brez pogleda – da vidimo, kaj pogled skriva
 SELECT
     o.id_oglasa, o.naslov, o.cena, n.m2,
     l.naselje, l.obcina, r.ime_regije, r.drzava, vn.ime_vrste, vi.ime_vira
@@ -53,7 +44,7 @@ ORDER BY o.cena DESC
 LIMIT 20;
 
 
--- ── 4. Povprečna najemnina po regijah (GROUP BY + HAVING) ──────────────────
+-- 4. Povprečna najemnina po regijah (GROUP BY + HAVING)
 -- HAVING filtrira PO združevanju (WHERE filtrira PRED njim).
 SELECT
     r.ime_regije                                        AS "Regija",
@@ -73,7 +64,7 @@ HAVING COUNT(*) >= 10
 ORDER BY "Povpr. €/m²" DESC;
 
 
--- ── 5. Primerjava Slovenija : Hrvaška ──────────────────────────────────────
+-- 5. Primerjava Slovenija : Hrvaška
 SELECT
     r.drzava                                 AS "Država",
     COUNT(*)                                 AS "Št. oglasov",
@@ -90,7 +81,7 @@ GROUP BY r.drzava
 ORDER BY r.drzava;
 
 
--- ── 6. Deset najdražjih naselij (podpoizvedba v FROM) ──────────────────────
+-- 6. Deset najdražjih naselij (podpoizvedba v FROM)
 SELECT *
 FROM (
     SELECT
@@ -110,7 +101,7 @@ ORDER BY eur_na_m2 DESC
 LIMIT 10;
 
 
--- ── 7. Oglasi, dražji od povprečja SVOJE regije (okenska funkcija) ─────────
+-- 7. Oglasi, dražji od povprečja SVOJE regije (okenska funkcija)
 -- AVG(...) OVER (PARTITION BY ...) izračuna povprečje po skupinah,
 -- a NE zloži vrstic skupaj – zato lahko vsako vrstico primerjamo s "svojim"
 -- povprečjem. Brez okenskih funkcij bi potrebovali dodatno podpoizvedbo.
@@ -138,7 +129,7 @@ ORDER BY "Razlika" DESC
 LIMIT 15;
 
 
--- ── 8. Najdražji oglas v vsaki regiji (ROW_NUMBER) ─────────────────────────
+-- 8. Najdražji oglas v vsaki regiji (ROW_NUMBER)
 WITH ostevilceni AS (
     SELECT
         o.naslov, o.cena, r.ime_regije, l.naselje,
@@ -154,7 +145,7 @@ WHERE mesto = 1
 ORDER BY cena DESC;
 
 
--- ── 9. Porazdelitev cen po razredih (histogram) ────────────────────────────
+-- 9. Porazdelitev cen po razredih (histogram)
 SELECT
     (FLOOR(cena / 250) * 250)::int AS "Razred od (€)",
     (FLOOR(cena / 250) * 250 + 249)::int AS "Razred do (€)",
@@ -165,7 +156,7 @@ GROUP BY 1, 2
 ORDER BY 1;
 
 
--- ── 10. Cena glede na starost stavbe ───────────────────────────────────────
+-- 10. Cena glede na starost stavbe
 -- CASE deluje kot if-elif-else in nam omogoči lastne skupine.
 SELECT
     CASE
@@ -185,7 +176,7 @@ GROUP BY 1
 ORDER BY 1;
 
 
--- ── 11. Kje je največ ponudbe? (top 15 občin) ──────────────────────────────
+-- 11. Kje je največ ponudbe? (top 15 občin)
 SELECT
     l.obcina                    AS "Občina",
     r.drzava                    AS "Država",
@@ -201,7 +192,7 @@ ORDER BY COUNT(*) DESC
 LIMIT 15;
 
 
--- ── 12. Preverjanje kakovosti podatkov ─────────────────────────────────────
+-- 12. Preverjanje kakovosti podatkov
 -- Koliko oglasov nima posameznega podatka?
 SELECT
     COUNT(*)                                              AS "Vseh oglasov",
@@ -216,7 +207,7 @@ FROM oglas o
     JOIN lokacija     l ON l.id_lokacije     = n.id_lokacije;
 
 
--- ── 13. Ali je uvoz res idempotenten? ──────────────────────────────────────
+-- 13. Ali je uvoz res idempotenten?
 -- Poizvedba mora vrniti NIČ vrstic – to dokazuje, da ni podvojenih oglasov.
 SELECT id_vira, zunanji_id, COUNT(*) AS kolikokrat
 FROM oglas
@@ -225,7 +216,7 @@ GROUP BY id_vira, zunanji_id
 HAVING COUNT(*) > 1;
 
 
--- ── 14. Ali kateri indeks sploh uporabimo? ─────────────────────────────────
+-- 14. Ali kateri indeks sploh uporabimo?
 -- EXPLAIN pokaže načrt izvedbe. Pri filtru po ceni bi moral Postgres
 -- uporabiti idx_oglas_cena namesto branja celotne tabele (Seq Scan).
 EXPLAIN ANALYZE

@@ -1,26 +1,7 @@
-"""
-============================================================================
- OPB – Najem nepremičnin
- Datoteka: app.py
+"""Spletna aplikacija (Bottle): poti, obrazci in preverjanje dostopa.
 
- PREDSTAVITVENI NIVO – spletna aplikacija (ogrodje Bottle).
-
- ZAGON:
-     python app.py
-     -> odpri http://localhost:8080
-
- KAKO DELUJE
-   Vsaka funkcija spodaj je ena STRAN. Nad njo je dekorator, ki pove,
-   na kateri naslov se odziva:
-       @get('/oglasi')   -> uporabnik odpre stran (klik na povezavo)
-       @post('/oglasi')  -> uporabnik odda obrazec (klik na gumb)
-
-   Funkcija vrne template(...) = zgeneriran HTML, ki ga brskalnik prikaže.
-
- PRAVILO NIVOJEV
-   app.py NIKOLI ne piše SQL in se NIKOLI ne pogovarja z bazo neposredno.
-   Vse gre prek Service -> Repository -> PostgreSQL.
-============================================================================
+Zagon: python app.py, nato odpri http://localhost:8080
+app.py ne piše SQL - vse gre prek Services in Data/repository.py.
 """
 
 import os
@@ -45,7 +26,7 @@ from Presentation.bottleext import (
 from Services.auth_service import AuthService
 from Services.service import PRIVZETO_NA_STRAN, Service
 
-# ── Nastavitve ──────────────────────────────────────────────────────────────
+# Nastavitve
 
 SERVER_PORT = int(os.environ.get("BOTTLE_PORT", 8080))
 RELOADER = os.environ.get("BOTTLE_RELOADER", "True").lower() in ("1", "true", "yes")
@@ -55,17 +36,10 @@ service = Service()
 auth = AuthService()
 
 
-# ── Dekoratorji za omejevanje dostopa ───────────────────────────────────────
-#
-# PRAVILA APLIKACIJE
-#   neprijavljen  : brskanje, iskanje, statistika
-#   uporabnik     : + dodajanje oglasov
-#   admin         : + urejanje in brisanje oglasov
-#
-# Preverjanje je na dveh mestih. V predlogah skrijemo gumbe, ki jih
-# uporabnik ne sme uporabiti, tu v dekoratorjih pa dostop tudi zares
-# preprečimo – skrit gumb sam po sebi ni zaščita, saj lahko kdorkoli
-# naslov vtipka neposredno v brskalnik.
+# Dostop: neprijavljen lahko brska in gleda statistiko, prijavljen uporabnik
+# lahko dodaja oglase, admin pa jih lahko tudi ureja in briše.
+# Predloge gumbe sicer skrijejo, a to ni zaščita – naslov lahko kdorkoli
+# vtipka neposredno v brskalnik, zato dostop preverimo še tu.
 
 def prijavljeni_uporabnik():
     """Vrne uporabniško ime iz PODPISANEGA piškotka (ali None)."""
@@ -73,13 +47,7 @@ def prijavljeni_uporabnik():
 
 
 def zahtevaj_prijavo(f):
-    """Stran je dostopna samo prijavljenim uporabnikom.
-
-    Dekorator je funkcija, ki ovije drugo funkcijo. Tu preverimo piškotek
-    'uporabnik'; če ga ni, namesto strani prikažemo obrazec za prijavo.
-    @wraps ohrani ime in dokumentacijo izvirne funkcije (Bottle to potrebuje
-    za razlikovanje poti).
-    """
+    """Stran je dostopna samo prijavljenim uporabnikom."""
     @wraps(f)
     def ovita(*args, **kwargs):
         if not prijavljeni_uporabnik():
@@ -93,11 +61,10 @@ def zahtevaj_prijavo(f):
 
 
 def zahtevaj_admina(f):
-    """Stran je dostopna samo uporabnikom z vlogo 'admin'.
+    """Stran je dostopna samo adminom.
 
-    Vloge NE beremo iz piškotka, ampak jo za vsako zahtevo preverimo
-    v bazi. Piškotek je pri uporabniku in bi ga ta lahko spremenil;
-    tabela `uporabnik` je edini vir resnice o tem, kdo je skrbnik.
+    Vloge ne beremo iz piškotka, ampak jo preverimo v bazi – piškotek je pri
+    uporabniku, tabela `uporabnik` pa je edini vir resnice o tem, kdo je admin.
     """
     @wraps(f)
     def ovita(*args, **kwargs):
@@ -140,7 +107,7 @@ def zahtevaj_pisalni_dostop(f):
     return ovita
 
 
-# ── Statične datoteke (CSS) ─────────────────────────────────────────────────
+# Statične datoteke (CSS)
 
 @get("/static/<filepath:path>")
 def staticne_datoteke(filepath):
@@ -148,7 +115,7 @@ def staticne_datoteke(filepath):
     return static_file(filepath, root="Presentation/static")
 
 
-# ── Domača stran ────────────────────────────────────────────────────────────
+# Domača stran
 
 @get("/")
 def domaca_stran():
@@ -168,7 +135,7 @@ def domaca_stran():
     )
 
 
-# ── Seznam oglasov z iskanjem, filtri in paginacijo ─────────────────────────
+# Seznam oglasov z iskanjem, filtri in paginacijo
 
 @get("/oglasi")
 def seznam_oglasov():
@@ -195,12 +162,11 @@ def seznam_oglasov():
     )
 
 
-# ── Podrobnosti enega oglasa ────────────────────────────────────────────────
+# Podrobnosti enega oglasa
 
 @get("/oglas/<id_oglasa:int>")
 def podrobnosti_oglasa(id_oglasa):
-    """Stran s podrobnostmi. `<id_oglasa:int>` pomeni, da Bottle
-    del poti samodejno pretvori v celo število."""
+    """Stran s podrobnostmi enega oglasa."""
     oglas = service.dobi_oglas(id_oglasa)
     if oglas is None:
         response.status = 404
@@ -227,7 +193,7 @@ def podrobnosti_oglasa(id_oglasa):
     return template_uporabnik("oglas.html", o=oglas, podobni=podobni)
 
 
-# ── Statistika ──────────────────────────────────────────────────────────────
+# Statistika
 
 @get("/statistika")
 def stran_statistika():
@@ -256,7 +222,7 @@ def stran_statistika():
     )
 
 
-# ── Dodajanje oglasa ────────────────────────────────────────────────────────
+# Dodajanje oglasa
 
 @get("/dodaj")
 @zahtevaj_prijavo
@@ -275,10 +241,9 @@ def shrani_nov_oglas():
     """Sprejme oddani obrazec in shrani nov oglas."""
     f = request.forms
 
-    # POZOR: redirect() v Bottle deluje tako, da VRŽE izjemo HTTPResponse.
-    # Če bi ga poklicali znotraj try/except Exception, bi našo preusmeritev
-    # ujel except in namesto preusmeritve prikazal "napako" brez sporočila.
-    # Zato v try samo shranimo, preusmerimo pa šele za njim.
+    # Pozor: redirect() vrže izjemo HTTPResponse. Če bi ga klicali znotraj
+    # try/except, bi ga except ujel in namesto preusmeritve prikazal napako.
+    # Zato tu samo shranimo, preusmerimo pa šele za blokom.
     nov_id = None
     try:
         nov = service.dodaj_oglas(
@@ -320,7 +285,7 @@ def shrani_nov_oglas():
     redirect(url(f"/oglas/{nov_id}"))
 
 
-# ── Urejanje oglasa (samo admin) ────────────────────────────────────────────
+# Urejanje oglasa (samo admin)
 
 @get("/uredi/<id_oglasa:int>")
 @zahtevaj_admina
@@ -359,7 +324,7 @@ def shrani_urejen_oglas(id_oglasa):
     redirect(url(f"/oglas/{id_oglasa}"))
 
 
-# ── Brisanje oglasa (samo admin) ────────────────────────────────────────────
+# Brisanje oglasa (samo admin)
 
 @post("/izbrisi/<id_oglasa:int>")
 @zahtevaj_admina
@@ -371,7 +336,7 @@ def izbrisi_oglas(id_oglasa):
     redirect(url("/oglasi"))
 
 
-# ── Prijava, registracija, odjava ───────────────────────────────────────────
+# Prijava, registracija, odjava
 
 @get("/prijava")
 def obrazec_prijava():
@@ -437,7 +402,7 @@ def odjava():
     redirect(url("/"))
 
 
-# ── Zagon ───────────────────────────────────────────────────────────────────
+# Zagon
 
 if __name__ == "__main__":
     print("=" * 66)

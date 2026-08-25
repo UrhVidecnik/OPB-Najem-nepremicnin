@@ -1,37 +1,12 @@
-"""
-============================================================================
- OPB – Najem nepremičnin
- Datoteka: nastavi_admina.py
+"""Dodeljevanje vloge 'admin' iz ukazne vrstice.
 
- UPRAVLJANJE UPORABNIKOV IN VLOG iz ukazne vrstice.
+    python nastavi_admina.py --seznam            # uporabniki in njihove vloge
+    python nastavi_admina.py urh                 # obstoječega naredi za admina
+    python nastavi_admina.py jure --geslo GESLO  # ustvari uporabnika in ga naredi za admina
+    python nastavi_admina.py jure --odvzemi      # odvzame skrbniške pravice
 
- V aplikaciji sta dve vlogi:
-     uporabnik  – brskanje, iskanje, statistika in DODAJANJE oglasov
-     admin      – vse to, poleg tega še UREJANJE in BRISANJE oglasov
-
- Vloge namenoma NI mogoče spremeniti prek spletnega vmesnika – če bi
- obstajala stran "postani admin", bi jo lahko odprl vsak. Skrbnika torej
- določi lastnik baze s to skripto.
-
- ZAGON (iz korenske mape projekta):
-
-   # kdo sploh je v bazi in kakšno vlogo ima
-   python nastavi_admina.py --seznam
-
-   # obstoječega uporabnika povzdignemo v skrbnika
-   python nastavi_admina.py urh
-
-   # uporabnika, ki ga v bazi še ni, ustvarimo in takoj naredimo za admina
-   python nastavi_admina.py jure --geslo NEKO_GESLO
-
-   # skrbniške pravice odvzamemo (uporabnik ostane, samo vloga se spremeni)
-   python nastavi_admina.py jure --odvzemi
-
- POTREBNE PRAVICE V BAZI
-   Skripta piše v tabelo `uporabnik`. Nad njo ima pravici INSERT in UPDATE
-   tudi uporabnik 'javnost', zato Data/auth.py za to NI nujna – deluje pa
-   seveda tudi z osebnim dostopom.
-============================================================================
+Vloge namenoma ni mogoče spremeniti prek spletnega vmesnika - stran
+"postani admin" bi lahko odprl vsakdo.
 """
 
 import argparse
@@ -92,7 +67,7 @@ def main() -> int:
 
     auth = AuthService()
     try:
-        # ── samo izpis ──────────────────────────────────────────────────────
+        # samo izpis
         if argumenti.seznam or not argumenti.uporabnisko_ime:
             izpisi_seznam(auth)
             if not argumenti.seznam:
@@ -103,7 +78,7 @@ def main() -> int:
         ime = argumenti.uporabnisko_ime.strip()
         nova_vloga = "uporabnik" if argumenti.odvzemi else "admin"
 
-        # ── uporabnika še ni: ga ustvarimo (samo če imamo geslo) ─────────────
+        # uporabnika še ni: ga ustvarimo (samo če imamo geslo)
         if not auth.obstaja_uporabnik(ime):
             if argumenti.odvzemi:
                 print(f"\n NAPAKA: uporabnika '{ime}' ni v bazi.")
@@ -123,7 +98,7 @@ def main() -> int:
             print(" Prijavi se lahko na /prijava z geslom, ki si ga pravkar vpisal.")
             return 0
 
-        # ── uporabnik obstaja: samo spremenimo vlogo ─────────────────────────
+        # uporabnik obstaja: samo spremenimo vlogo
         uporabnik = auth.nastavi_vlogo(ime, nova_vloga)
         if nova_vloga == "admin":
             print(f"\n Uporabnik '{uporabnik.uporabnisko_ime}' je zdaj SKRBNIK (admin).")

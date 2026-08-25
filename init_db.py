@@ -1,18 +1,7 @@
-"""
-============================================================================
- OPB – Najem nepremičnin
- Datoteka: init_db.py
+"""Ustvari shemo baze in podeli pravice: python init_db.py
 
- Ustvari shemo baze in podeli pravice.
-
- ZAGON (iz korenske mape projekta):
-     python init_db.py
-
- POZOR:
-   - Potrebuješ Data/auth.py s podatki uporabnika, ki sme ustvarjati tabele
-     (uporabnik 'javnost' tega NE sme).
-   - Skripta najprej POBRIŠE obstoječe tabele. Zato te vpraša za potrditev.
-============================================================================
+Potrebuje Data/auth.py, ker uporabnik 'javnost' tabel ne sme ustvarjati.
+Pozor: najprej pobriše obstoječe tabele, zato vpraša za potrditev.
 """
 
 import os

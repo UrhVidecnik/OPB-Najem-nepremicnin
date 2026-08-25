@@ -1,9 +1,6 @@
-%# ===========================================================================
-%#  Presentation/views/domaca_stran.html – uvodna stran s pregledom
-%#
-%#  Prejme: statistika (StatistikaDTO), najdrazji, najcenejsi (seznama
-%#          OglasDTO), po_regijah, stevilo_regij, stevilo_lokacij
-%# ===========================================================================
+%# Uvodna stran s pregledom. Prejme: statistika, najdrazji, najcenejsi,
+%# po_regijah, stevilo_regij, stevilo_lokacij.
+
 % rebase('osnova.html', naslov_strani='Domača stran')
 
 <h1>Pregled ponudbe najema</h1>
@@ -12,7 +9,7 @@
     bazi PostgreSQL na strežniku FMF.
 </p>
 
-%# ── Ključne številke ────────────────────────────────────────────────────
+%# Ključne številke
 <div class="stat-mreza">
     <div class="stat-kartica">
         <div class="stat-oznaka">Oglasov v bazi</div>
@@ -45,7 +42,7 @@
     <a class="gumb" href="{{ url('/statistika') }}">Poglej statistiko</a>
 </div>
 
-%# ── Najdražje regije ────────────────────────────────────────────────────
+%# Najdražje regije
 % if po_regijah:
 <h2>Kje je najem najdražji?</h2>
 <div class="plosca">
@@ -78,7 +75,7 @@
 </div>
 % end
 
-%# ── Dva stolpca: najdražji in najcenejši oglasi ─────────────────────────
+%# Dva stolpca: najdražji in najcenejši oglasi
 <div class="podrobnosti-mreza">
     <div>
         <h2>Najdražji oglasi</h2>

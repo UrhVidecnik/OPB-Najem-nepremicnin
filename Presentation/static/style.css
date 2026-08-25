@@ -1,14 +1,5 @@
-/* ==========================================================================
-   OPB – Najem nepremičnin
-   Datoteka: Presentation/static/style.css
-
-   Preprost, a urejen slog. Brez zunanjih knjižnic (Bootstrap ipd.) –
-   vse je napisano na roko, da je razumljivo in da aplikacija deluje
-   tudi brez interneta.
-
-   Barve so zapisane kot CSS spremenljivke (--ime) na vrhu, zato lahko
-   celotno barvno shemo spremeniš na enem mestu.
-   ========================================================================== */
+/* Slog aplikacije. Brez zunanjih knjižnic - barve so zbrane kot
+   spremenljivke v :root, da jih je mogoče spremeniti na enem mestu. */
 
 :root {
     --barva-ozadje:      #f5f6f8;

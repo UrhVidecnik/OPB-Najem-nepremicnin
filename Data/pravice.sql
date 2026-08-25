@@ -1,16 +1,7 @@
--- ============================================================================
---  OPB – Najem nepremičnin
---  Datoteka: Data/pravice.sql
---
---  Podeli pravice nad bazo. Zaženi ŠELE PO create_database.sql,
---  ker GRANT deluje samo nad tabelami, ki že obstajajo.
---
---  Zaženi kot lastnik baze (urhvid):
---    psql -h baza.fmf.uni-lj.si -U urhvid -d sem2026_urhvid -f Data/pravice.sql
--- ============================================================================
+-- Pravice nad bazo. Zaženi šele po create_database.sql, ker GRANT deluje
+-- samo nad tabelami, ki že obstajajo. Zaženi kot lastnik baze.
 
-
--- ── 1. Jure (sodelavec pri projektu) – polne pravice ────────────────────────
+-- 1. Jure (sodelavec pri projektu) – polne pravice
 GRANT CONNECT ON DATABASE sem2026_urhvid TO jurekr;
 GRANT USAGE, CREATE ON SCHEMA public TO jurekr;
 GRANT ALL PRIVILEGES ON ALL TABLES    IN SCHEMA public TO jurekr;
@@ -23,7 +14,7 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA public
     GRANT ALL PRIVILEGES ON SEQUENCES TO jurekr;
 
 
--- ── 2. javnost (bralni dostop za spletno aplikacijo) ────────────────────────
+-- 2. javnost (bralni dostop za spletno aplikacijo)
 -- Aplikacija se v privzeti nastavitvi poveže kot 'javnost'.
 --
 -- Ta uporabnik sme:

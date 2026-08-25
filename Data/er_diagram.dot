@@ -1,14 +1,5 @@
-/* ============================================================================
-   OPB – Najem nepremičnin
-   Datoteka: Data/er_diagram.dot
-
-   Izvorna koda ER diagrama v jeziku DOT (Graphviz).
-   Ko spremeniš shemo, popravi to datoteko in poženi:
-
-       dot -Tpng Data/er_diagram.dot -o er-nepremicnine.png
-
-   (Graphviz namestiš z:  brew install graphviz  na macOS.)
-   ============================================================================ */
+/* ER diagram v jeziku DOT (Graphviz). Sliko osvežiš z:
+   dot -Tpng Data/er_diagram.dot -o er-nepremicnine.png */
 
 digraph ER {
     rankdir = LR;
@@ -20,7 +11,7 @@ digraph ER {
     node [shape = plaintext, fontname = "Helvetica", fontsize = 11];
     edge [fontname = "Helvetica", fontsize = 9, color = "#44506a", arrowhead = none];
 
-    /* ── Šifranti ────────────────────────────────────────────────────────── */
+    /* Šifranti */
 
     vir [label = <
         <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5">
@@ -57,7 +48,7 @@ digraph ER {
         <TR><TD ALIGN="LEFT"></TD><TD ALIGN="LEFT">postna_stevilka integer</TD></TR>
         </TABLE>>];
 
-    /* ── Jedro ───────────────────────────────────────────────────────────── */
+    /* Jedro */
 
     nepremicnina [label = <
         <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="5">
@@ -98,7 +89,7 @@ digraph ER {
         <TR><TD ALIGN="LEFT"></TD><TD ALIGN="LEFT">zadnja_prijava timestamp</TD></TR>
         </TABLE>>];
 
-    /* ── Povezave (kardinalnosti 1 : N) ──────────────────────────────────── */
+    /* Povezave (kardinalnosti 1 : N) */
 
     regija       -> lokacija     [taillabel = "1", headlabel = "N", labeldistance = 2.0];
     vrsta        -> nepremicnina [taillabel = "1", headlabel = "N", labeldistance = 2.0];

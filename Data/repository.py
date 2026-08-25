@@ -1,22 +1,9 @@
-"""
-============================================================================
- OPB – Najem nepremičnin
- Datoteka: Data/repository.py
+"""Podatkovni nivo: vse SQL poizvedbe projekta.
 
- PODATKOVNI NIVO (data access layer).
-
- Edina datoteka v projektu, ki govori s PostgreSQL. Vse SQL poizvedbe so
- tukaj; nivoji nad tem (Services, app.py) vidijo samo Python objekte.
-
- Zakaj tako?
-   - če se shema baze spremeni, popravljamo samo to datoteko;
-   - poslovna logika (Services) je testabilna brez baze;
-   - SQL je na enem mestu, zato ga je lažje optimizirati.
-
- VARNOST: parametrov NIKOLI ne lepimo v SQL z f-stringi. Vedno uporabimo
- psycopg2 nadomestne znake %s – knjižnica poskrbi za pravilno ubežanje
- in s tem prepreči SQL injection.
-============================================================================
+Edina datoteka, ki se pogovarja s PostgreSQL; nivoji nad njo delajo samo
+s Python objekti iz Data/models.py. Parametrov ne lepimo v SQL z f-stringi,
+ampak jih podamo prek %s - psycopg2 poskrbi za ubežanje in s tem prepreči
+SQL injection.
 """
 
 import os
@@ -47,13 +34,9 @@ from Data.models import (
 psycopg2.extensions.register_type(psycopg2.extensions.UNICODE)
 
 
-# ── Nastavitve povezave ─────────────────────────────────────────────────────
-#
-# Vrstni red iskanja (prvi, ki obstaja, zmaga):
-#   1. okoljske spremenljivke DB_HOST, DB_NAME, DB_USER, DB_PASSWORD, DB_PORT
-#      (uporablja jih Binder, kjer datotek z gesli ni)
-#   2. Data/auth.py       – tvoj osebni dostop s pravico pisanja (ni v gitu)
-#   3. Data/auth_public.py – javni bralni dostop (je v gitu)
+# Podatke za povezavo iščemo po vrsti: okoljske spremenljivke (uporablja jih
+# Binder), nato Data/auth.py (osebni dostop s pravico pisanja, ni v gitu) in
+# nazadnje Data/auth_public.py (javni bralni dostop).
 
 try:
     import Data.auth as auth            # type: ignore
@@ -69,27 +52,18 @@ DB_USER = os.environ.get("DB_USER", auth.user)
 DB_PASSWORD = os.environ.get("DB_PASSWORD", auth.password)
 DB_PORT = int(os.environ.get("DB_PORT", getattr(auth, "port", 5432)))
 
-# ── Kaj sme narediti povezani uporabnik baze ────────────────────────────────
-#
-# Uporabnik 'javnost' (privzeti javni dostop) ima po Data/pravice.sql:
-#     SELECT nad vsemi tabelami
-#     INSERT nad tabelami oglas, nepremicnina, lokacija, regija, ...
-#     INSERT + UPDATE nad tabelo uporabnik (registracija, prijava, vloge)
-# NIMA pa pravic UPDATE in DELETE nad oglasi – urejanja in brisanja torej
-# prek javnega dostopa ni mogoče izvesti, tudi če bi kdo obšel aplikacijo.
-#
-# Osebni dostop (Data/auth.py, npr. uporabnik urhvid) ima vse pravice.
-#
-# Aplikacija ti dve zastavici prebere in ustrezno skrije gumbe – tako
-# uporabnik ne klikne na nekaj, kar bi se v bazi tako ali tako zavrnilo.
+# Uporabnik 'javnost' ima po Data/pravice.sql pravico SELECT nad vsemi tabelami
+# in INSERT nad oglasi, nepremičninami, lokacijami in uporabniki, nima pa UPDATE
+# in DELETE nad oglasi – urejanja in brisanja torej ni mogoče izvesti niti mimo
+# aplikacije. Osebni dostop iz Data/auth.py ima vse pravice; aplikacija to
+# zastavico prebere in gumbe za urejanje po potrebi skrije.
 JE_JAVNI_DOSTOP = DB_USER == "javnost"
 JE_PISALNI_DOSTOP = not JE_JAVNI_DOSTOP    # sme UPDATE in DELETE (urejanje, brisanje)
 JE_DODAJANJE_MOZNO = True                  # INSERT sme tudi 'javnost'
 
 
-# Dovoljena razvrščanja. Ključ pride iz spletnega obrazca, vrednost gre v SQL.
-# Slovar uporabimo kot "belo listo": uporabnik NE more vplivati na SQL,
-# ker vrednost vedno vzamemo iz tega slovarja, nikoli iz vhoda.
+# Dovoljena razvrščanja. Ključ pride iz obrazca, v SQL pa gre vrednost iz tega
+# slovarja – tako uporabnik na ORDER BY ne more vplivati.
 UREJANJA = {
     "cena_asc":   "o.cena ASC",
     "cena_desc":  "o.cena DESC",
@@ -106,7 +80,7 @@ UREJANJA = {
 class Repository:
     """Dostop do baze. Ena instanca = ena odprta povezava."""
 
-    # ── Povezava ────────────────────────────────────────────────────────────
+    # Povezava
 
     def __init__(self):
         self.conn = psycopg2.connect(
@@ -166,7 +140,7 @@ class Repository:
     def __exit__(self, exc_type, exc_value, traceback):
         self.zapri()
 
-    # ── Ustvarjanje sheme ───────────────────────────────────────────────────
+    # Ustvarjanje sheme
 
     def izvedi_sql_datoteko(self, pot: str) -> None:
         """Prebere .sql datoteko in jo izvede. Uporablja jo init_db.py."""
@@ -176,9 +150,7 @@ class Repository:
             cur.execute(sql)
         self.conn.commit()
 
-    # ========================================================================
-    #  VIR
-    # ========================================================================
+    # VIR
 
     def dodaj_vir(self, vir: Vir) -> Vir:
         """Vstavi nov vir in vrne isti objekt z izpolnjenim id_vira."""
@@ -232,9 +204,7 @@ class Repository:
             cur.execute("SELECT * FROM vir ORDER BY ime_vira")
             return [Vir(**v) for v in cur.fetchall()]
 
-    # ========================================================================
-    #  VRSTA NEPREMIČNINE
-    # ========================================================================
+    # VRSTA NEPREMIČNINE
 
     def dobi_ali_dodaj_vrsto(self, ime_vrste: str) -> VrstaNepremicnine:
         with self._cur() as cur:
@@ -259,9 +229,7 @@ class Repository:
             cur.execute("SELECT * FROM vrsta_nepremicnine ORDER BY ime_vrste")
             return [VrstaNepremicnine(**v) for v in cur.fetchall()]
 
-    # ========================================================================
-    #  REGIJA
-    # ========================================================================
+    # REGIJA
 
     def dobi_ali_dodaj_regijo(self, ime_regije: str, drzava: str = "SI") -> Regija:
         with self._cur() as cur:
@@ -294,9 +262,7 @@ class Repository:
                 cur.execute("SELECT * FROM regija ORDER BY drzava, ime_regije")
             return [Regija(**v) for v in cur.fetchall()]
 
-    # ========================================================================
-    #  LOKACIJA
-    # ========================================================================
+    # LOKACIJA
 
     def dobi_ali_dodaj_lokacijo(
         self,
@@ -364,9 +330,7 @@ class Repository:
             cur.execute(sql, parametri)
             return [Lokacija(**v) for v in cur.fetchall()]
 
-    # ========================================================================
-    #  NEPREMIČNINA
-    # ========================================================================
+    # NEPREMIČNINA
 
     def dodaj_nepremicnino(self, n: Nepremicnina) -> Nepremicnina:
         with self._cur() as cur:
@@ -401,9 +365,7 @@ class Repository:
         self.conn.commit()
         return n
 
-    # ========================================================================
-    #  OGLAS
-    # ========================================================================
+    # OGLAS
 
     def dodaj_oglas(self, og: Oglas) -> Oglas:
         with self._cur() as cur:
@@ -492,7 +454,7 @@ class Repository:
             )
             return {v["zunanji_id"] for v in cur.fetchall()}
 
-    # ── Branje oglasov s filtri ─────────────────────────────────────────────
+    # Branje oglasov s filtri
 
     def _sestavi_pogoje(self, f: Optional[OglasFiltriDTO]) -> Tuple[str, list]:
         """Iz filtrov sestavi WHERE del poizvedbe in seznam parametrov.
@@ -696,9 +658,7 @@ class Repository:
             vrstica = cur.fetchone()
         return self._v_dto(vrstica) if vrstica else None
 
-    # ========================================================================
-    #  STATISTIKA
-    # ========================================================================
+    # STATISTIKA
 
     def statistika(self, filtri: Optional[OglasFiltriDTO] = None) -> StatistikaDTO:
         """Agregatne funkcije nad (filtriranimi) oglasi.
@@ -847,9 +807,7 @@ class Repository:
         )
         return {"najdrazji": najdrazji, "najcenejsi": najcenejsi}
 
-    # ========================================================================
-    #  UPORABNIK (prijava / registracija)
-    # ========================================================================
+    # UPORABNIK (prijava / registracija)
 
     def dobi_uporabnika(self, uporabnisko_ime: str) -> Optional[Uporabnik]:
         with self._beri() as cur:

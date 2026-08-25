@@ -1,19 +1,7 @@
-"""
-============================================================================
- OPB – Najem nepremičnin
- Datoteka: testi.py
+"""Testi vseh treh nivojev. Zagon: python testi.py
 
- PREPROSTI TESTI vseh treh nivojev.
-
- ZAGON (iz korenske mape projekta):
-     python testi.py
-
- Testi so napisani brez zunanjih knjižnic (brez pytest), da jih lahko
- poženeš takoj po `pip install -r requirements.txt`.
-
- POZOR: testi, ki PIŠEJO v bazo, se preskočijo, če si povezan kot 'javnost'.
- Vsak zapisani testni podatek na koncu tudi pobrišemo, da baza ostane čista.
-============================================================================
+Napisani so brez pytest, da delujejo takoj po pip install -r requirements.txt.
+Testi, ki pišejo v bazo, se preskočijo, če si povezan kot 'javnost'.
 """
 
 import sys
@@ -38,11 +26,7 @@ preskoceni = 0
 
 
 def test(ime):
-    """Dekorator, ki test požene in izpiše rezultat.
-
-    Namesto pytest uporabimo to – vsak test je navadna funkcija,
-    ki bodisi steče do konca (uspeh) bodisi vrže izjemo (neuspeh).
-    """
+    """Dekorator, ki test požene in izpiše rezultat."""
     def dekorator(f):
         global opravljeni, padli
         try:
@@ -76,9 +60,7 @@ service = Service(repo)
 auth = AuthService(repo)
 
 
-# ============================================================================
-#  1. MODELI (brez baze)
-# ============================================================================
+# 1. MODELI (brez baze)
 print("\n[1] Podatkovni modeli")
 
 
@@ -142,9 +124,7 @@ def _():
     assert s.ima_prejsnjo and s.ima_naslednjo
 
 
-# ============================================================================
-#  2. SERVICE – pretvorbe in validacija (brez baze)
-# ============================================================================
+# 2. SERVICE – pretvorbe in validacija (brez baze)
 print("\n[2] Aplikacijski nivo – pretvorbe in validacija")
 
 
@@ -194,9 +174,7 @@ def _():
     assert not OglasFiltriDTO(cena_min=100).je_prazen()
 
 
-# ============================================================================
-#  3. REPOSITORY – branje iz baze
-# ============================================================================
+# 3. REPOSITORY – branje iz baze
 print("\n[3] Podatkovni nivo – branje")
 
 
@@ -336,9 +314,7 @@ def _():
         assert cur.fetchone()["n"] == 0, "v bazi so podvojeni oglasi"
 
 
-# ============================================================================
-#  4. PISANJE V BAZO (samo z osebnim dostopom)
-# ============================================================================
+# 4. PISANJE V BAZO (samo z osebnim dostopom)
 print("\n[4] Podatkovni nivo – pisanje")
 
 if not JE_PISALNI_DOSTOP:
@@ -476,9 +452,7 @@ else:
         repo.conn.commit()
 
 
-# ============================================================================
-#  Povzetek
-# ============================================================================
+# Povzetek
 repo.zapri()
 
 print("\n" + "=" * 74)

@@ -1,21 +1,8 @@
-"""
-============================================================================
- OPB – Najem nepremičnin
- Datoteka: Services/auth_service.py
+"""Prijava, registracija in vloge uporabnikov.
 
- PRIJAVA IN REGISTRACIJA uporabnikov.
-
- ZAKAJ bcrypt in ne navadno geslo?
-   Če bi gesla shranili v čistopisu, bi vsak, ki pride do baze, videl
-   gesla vseh uporabnikov. Zato shranimo samo ZGOŠČENO vrednost (hash).
-   Iz hasha gesla ni mogoče izračunati nazaj; ob prijavi vpisano geslo
-   zgostimo znova in primerjamo hasha.
-
- ZAKAJ prav bcrypt?
-   Namenoma je POČASEN in vsakemu geslu doda naključno "sol" (salt).
-   Zato dve enaki gesli dasta različna hasha, napad s slovarjem pa je
-   milijonkrat dražji kot pri npr. MD5.
-============================================================================
+Gesla so v bazi shranjena samo kot bcrypt hash. bcrypt je namenoma počasen
+in vsakemu geslu doda naključno sol, zato dve enaki gesli dasta različna
+hasha.
 """
 
 from typing import List, Optional
@@ -35,15 +22,11 @@ class AuthService:
     def __init__(self, repository: Optional[Repository] = None):
         self.repository = repository or Repository()
 
-    # ── Pomožne metode za gesla ─────────────────────────────────────────────
+    # Pomožne metode za gesla
 
     @staticmethod
     def zgosti_geslo(geslo: str) -> str:
-        """Geslo -> bcrypt hash (niz, ki ga shranimo v bazo).
-
-        bcrypt dela z bajti, zato .encode() pred in .decode() po.
-        gensalt() vsakič ustvari novo naključno sol.
-        """
+        """Geslo -> bcrypt hash, ki ga shranimo v bazo."""
         return bcrypt.hashpw(geslo.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
 
     @staticmethod
@@ -55,7 +38,7 @@ class AuthService:
             # Pokvarjen ali prazen hash v bazi -> prijava pač ne uspe.
             return False
 
-    # ── Registracija ────────────────────────────────────────────────────────
+    # Registracija
 
     def obstaja_uporabnik(self, uporabnisko_ime: str) -> bool:
         if not uporabnisko_ime:
@@ -93,7 +76,7 @@ class AuthService:
         )
         return self.repository.dodaj_uporabnika(uporabnik)
 
-    # ── Prijava ─────────────────────────────────────────────────────────────
+    # Prijava
 
     def prijavi(self, uporabnisko_ime: str, geslo: str) -> Optional[Uporabnik]:
         """Vrne Uporabnika ob uspešni prijavi, sicer None.
@@ -119,7 +102,7 @@ class AuthService:
 
         return uporabnik
 
-    # ── Ostalo ──────────────────────────────────────────────────────────────
+    # Ostalo
 
     def seznam_uporabnikov(self) -> List[Uporabnik]:
         return self.repository.seznam_uporabnikov()
@@ -136,7 +119,7 @@ class AuthService:
         uporabnik = self.repository.dobi_uporabnika(uporabnisko_ime)
         return uporabnik is not None and uporabnik.je_admin
 
-    # ── Upravljanje vlog ────────────────────────────────────────────────────
+    # Upravljanje vlog
 
     def nastavi_vlogo(self, uporabnisko_ime: str, vloga: str) -> Uporabnik:
         """Uporabniku nastavi vlogo. Ob napaki vrže ValueError.
