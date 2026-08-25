@@ -56,13 +56,15 @@ OPB-Najem-nepremicnin/
 ├── init_db.py              ustvari shemo baze in podeli pravice
 ├── nastavi_admina.py       dodeli ali odvzame vlogo admin
 ├── testi.py                testi vseh treh nivojev
-├── er-nepremicnine.png     ER diagram
+├── er-nepremicnine.png     ER diagram (slika za README)
+├── er-nepremicnine.svg     isti diagram v vektorski obliki
 │
 ├── Data/                   podatkovni nivo
 │   ├── create_database.sql   tabele, indeksi, pogled
 │   ├── pravice.sql           GRANT ukazi
 │   ├── prikaz_baze.sql       poizvedbe za predstavitev
-│   ├── er_diagram.dot        izvorna koda ER diagrama (Graphviz)
+│   ├── er_diagram.py         nariše ER diagram (er-nepremicnine.svg)
+│   ├── er_diagram.dot        starejša različica diagrama (Graphviz)
 │   ├── models.py             podatkovni modeli
 │   ├── repository.py         vse SQL poizvedbe
 │   ├── nalozi_v_bazo.py      uvoz CSV v bazo

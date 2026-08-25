@@ -1,0 +1,315 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1804" height="964" viewBox="0 0 1804 964" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif">
+<defs><filter id="senca" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#0F172A" flood-opacity="0.10"/></filter></defs>
+<rect width="1804" height="964" fill="#F5F7FA"/>
+<text x="58" y="62" font-size="25" font-weight="bold" fill="#1F2933">Najem nepremičnin — ER diagram baze</text>
+<text x="58" y="88" font-size="13" fill="#6B7280">PostgreSQL · 7 tabel in pogled oglas_pregled · vse povezave so 1 : N</text>
+<text x="1746" y="62" font-size="12" fill="#9AA3AF" text-anchor="end">shema: Data/create_database.sql</text>
+<text x="1746" y="82" font-size="12" fill="#9AA3AF" text-anchor="end">diagram: Data/er_diagram.py</text>
+<line x1="58" y1="106" x2="1746" y2="106" stroke="#D7DBE3"/>
+<path d="M 355.1 281.5 L 389.6 281.5 Q 399.1 281.5 399.1 272.0 L 399.1 272.0 Q 399.1 262.5 408.6 262.5 L 447.1 262.5" fill="none" stroke="#8FA0B4" stroke-width="1.6"/>
+<line x1="342.10499999999996" y1="274.5" x2="342.10499999999996" y2="288.5" stroke="#8FA0B4" stroke-width="1.6"/>
+<line x1="329.10499999999996" y1="281.5" x2="355.10499999999996" y2="281.5" stroke="#8FA0B4" stroke-width="1.6"/>
+<circle cx="350.10499999999996" cy="281.5" r="4" fill="#FFFFFF" stroke="#8FA0B4" stroke-width="1.6"/>
+<line x1="447.10499999999996" y1="262.5" x2="469.10499999999996" y2="262.5" stroke="#8FA0B4" stroke-width="1.6"/>
+<line x1="469.10499999999996" y1="262.5" x2="456.10499999999996" y2="255.5" stroke="#8FA0B4" stroke-width="1.6"/>
+<line x1="469.10499999999996" y1="262.5" x2="456.10499999999996" y2="269.5" stroke="#8FA0B4" stroke-width="1.6"/>
+<circle cx="451.10499999999996" cy="262.5" r="4" fill="#FFFFFF" stroke="#8FA0B4" stroke-width="1.6"/>
+<text x="359.10499999999996" y="272.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="11" font-weight="bold" fill="#9AA3AF">1</text>
+<text x="439.10499999999996" y="253.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="11" font-weight="bold" fill="#9AA3AF" text-anchor="end">N</text>
+<path d="M 799.9 235.5 L 831.9 235.5 Q 843.9 235.5 843.9 247.5 L 843.9 413.5 Q 843.9 425.5 855.9 425.5 L 891.9 425.5" fill="none" stroke="#8FA0B4" stroke-width="1.6"/>
+<line x1="786.9324999999999" y1="228.5" x2="786.9324999999999" y2="242.5" stroke="#8FA0B4" stroke-width="1.6"/>
+<line x1="773.9324999999999" y1="235.5" x2="799.9324999999999" y2="235.5" stroke="#8FA0B4" stroke-width="1.6"/>
+<line x1="891.9324999999999" y1="425.5" x2="913.9324999999999" y2="425.5" stroke="#8FA0B4" stroke-width="1.6"/>
+<line x1="913.9324999999999" y1="425.5" x2="900.9324999999999" y2="418.5" stroke="#8FA0B4" stroke-width="1.6"/>
+<line x1="913.9324999999999" y1="425.5" x2="900.9324999999999" y2="432.5" stroke="#8FA0B4" stroke-width="1.6"/>
+<circle cx="895.9324999999999" cy="425.5" r="4" fill="#FFFFFF" stroke="#8FA0B4" stroke-width="1.6"/>
+<text x="803.9324999999999" y="226.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="11" font-weight="bold" fill="#9AA3AF">1</text>
+<text x="883.9324999999999" y="416.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="11" font-weight="bold" fill="#9AA3AF" text-anchor="end">N</text>
+<path d="M 799.9 519.5 L 848.7 519.5 Q 860.7 519.5 860.7 507.5 L 860.7 410.5 Q 860.7 398.5 872.7 398.5 L 891.9 398.5" fill="none" stroke="#8FA0B4" stroke-width="1.6"/>
+<line x1="786.9324999999999" y1="512.5" x2="786.9324999999999" y2="526.5" stroke="#8FA0B4" stroke-width="1.6"/>
+<line x1="773.9324999999999" y1="519.5" x2="799.9324999999999" y2="519.5" stroke="#8FA0B4" stroke-width="1.6"/>
+<line x1="891.9324999999999" y1="398.5" x2="913.9324999999999" y2="398.5" stroke="#8FA0B4" stroke-width="1.6"/>
+<line x1="913.9324999999999" y1="398.5" x2="900.9324999999999" y2="391.5" stroke="#8FA0B4" stroke-width="1.6"/>
+<line x1="913.9324999999999" y1="398.5" x2="900.9324999999999" y2="405.5" stroke="#8FA0B4" stroke-width="1.6"/>
+<circle cx="895.9324999999999" cy="398.5" r="4" fill="#FFFFFF" stroke="#8FA0B4" stroke-width="1.6"/>
+<text x="803.9324999999999" y="510.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="11" font-weight="bold" fill="#9AA3AF">1</text>
+<text x="883.9324999999999" y="389.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="11" font-weight="bold" fill="#9AA3AF" text-anchor="end">N</text>
+<path d="M 1291.2 199.5 L 1356.8 199.5 Q 1368.8 199.5 1368.8 211.5 L 1368.8 391.3 Q 1368.8 398.5 1376.0 398.5 L 1383.2 398.5" fill="none" stroke="#8FA0B4" stroke-width="1.6"/>
+<line x1="1278.2324999999998" y1="192.5" x2="1278.2324999999998" y2="206.5" stroke="#8FA0B4" stroke-width="1.6"/>
+<line x1="1265.2324999999998" y1="199.5" x2="1291.2324999999998" y2="199.5" stroke="#8FA0B4" stroke-width="1.6"/>
+<line x1="1383.2324999999998" y1="398.5" x2="1405.2324999999998" y2="398.5" stroke="#8FA0B4" stroke-width="1.6"/>
+<line x1="1405.2324999999998" y1="398.5" x2="1392.2324999999998" y2="391.5" stroke="#8FA0B4" stroke-width="1.6"/>
+<line x1="1405.2324999999998" y1="398.5" x2="1392.2324999999998" y2="405.5" stroke="#8FA0B4" stroke-width="1.6"/>
+<circle cx="1387.2324999999998" cy="398.5" r="4" fill="#FFFFFF" stroke="#8FA0B4" stroke-width="1.6"/>
+<text x="1295.2324999999998" y="190.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="11" font-weight="bold" fill="#9AA3AF">1</text>
+<text x="1375.2324999999998" y="389.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="11" font-weight="bold" fill="#9AA3AF" text-anchor="end">N</text>
+<path d="M 1291.2 371.5 L 1303.6 371.5 Q 1315.6 371.5 1315.6 383.5 L 1315.6 413.5 Q 1315.6 425.5 1327.6 425.5 L 1383.2 425.5" fill="none" stroke="#8FA0B4" stroke-width="1.6"/>
+<line x1="1278.2324999999998" y1="364.5" x2="1278.2324999999998" y2="378.5" stroke="#8FA0B4" stroke-width="1.6"/>
+<line x1="1265.2324999999998" y1="371.5" x2="1291.2324999999998" y2="371.5" stroke="#8FA0B4" stroke-width="1.6"/>
+<line x1="1383.2324999999998" y1="425.5" x2="1405.2324999999998" y2="425.5" stroke="#8FA0B4" stroke-width="1.6"/>
+<line x1="1405.2324999999998" y1="425.5" x2="1392.2324999999998" y2="418.5" stroke="#8FA0B4" stroke-width="1.6"/>
+<line x1="1405.2324999999998" y1="425.5" x2="1392.2324999999998" y2="432.5" stroke="#8FA0B4" stroke-width="1.6"/>
+<circle cx="1387.2324999999998" cy="425.5" r="4" fill="#FFFFFF" stroke="#8FA0B4" stroke-width="1.6"/>
+<text x="1295.2324999999998" y="362.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="11" font-weight="bold" fill="#9AA3AF">1</text>
+<text x="1375.2324999999998" y="416.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="11" font-weight="bold" fill="#9AA3AF" text-anchor="end">N</text>
+<g filter="url(#senca)">
+<rect x="58.0" y="232" width="271.10499999999996" height="167" rx="11" fill="#FFFFFF" stroke="#D7DBE3"/>
+</g>
+<path d="M 58.0 243 A 11 11 0 0 1 69.0 232 L 318.10499999999996 232 A 11 11 0 0 1 329.10499999999996 243 L 329.10499999999996 268 L 58.0 268 Z" fill="#4A7FA5"/>
+<text x="71.0" y="255.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="15" font-weight="bold" fill="#FFFFFF">regija</text>
+<text x="316.10499999999996" y="254.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="10" fill="#FFFFFF" fill-opacity="0.78" text-anchor="end">regija in država</text>
+<rect x="59.0" y="268" width="269.10499999999996" height="27" fill="#F7F9FC"/>
+<rect x="71.0" y="275" width="24" height="14" rx="4" fill="#FEF3C7"/>
+<text x="83.0" y="285.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="9" font-weight="bold" fill="#92400E" text-anchor="middle">PK</text>
+<text x="101.0" y="285.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="12.5" font-weight="bold" fill="#1F2933">id_regije</text>
+<text x="187.625" y="285.5" font-family="'SF Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#6B7280">serial</text>
+<line x1="59.0" y1="295" x2="328.10499999999996" y2="295" stroke="#EFF1F5"/>
+<text x="101.0" y="312.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="12.5" font-weight="normal" fill="#1F2933">ime_regije</text>
+<text x="187.625" y="312.5" font-family="'SF Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#6B7280">text</text>
+<text x="316.10499999999996" y="312.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="9.5" font-weight="bold" fill="#9AA3AF" text-anchor="end" letter-spacing="0.5">NN</text>
+<line x1="59.0" y1="322" x2="328.10499999999996" y2="322" stroke="#EFF1F5"/>
+<text x="101.0" y="339.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="12.5" font-weight="normal" fill="#1F2933">drzava</text>
+<text x="187.625" y="339.5" font-family="'SF Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#6B7280">char(2)</text>
+<text x="316.10499999999996" y="339.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="9.5" font-weight="bold" fill="#9AA3AF" text-anchor="end" letter-spacing="0.5">NN</text>
+<path d="M 58.0 349 L 329.10499999999996 349 L 329.10499999999996 388 A 11 11 0 0 1 318.10499999999996 399 L 69.0 399 A 11 11 0 0 1 58.0 388 Z" fill="#FAFAFB"/>
+<line x1="59.0" y1="349" x2="328.10499999999996" y2="349" stroke="#EFF1F5"/>
+<text x="71.0" y="365.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="10.5" font-style="italic" fill="#6B7280">unique (ime_regije, drzava)</text>
+<text x="71.0" y="390.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="10.5" font-style="italic" fill="#6B7280">check drzava in ('SI', 'HR')</text>
+<g filter="url(#senca)">
+<rect x="469.10499999999996" y="186" width="304.8275" height="223" rx="11" fill="#FFFFFF" stroke="#D7DBE3"/>
+</g>
+<path d="M 469.10499999999996 197 A 11 11 0 0 1 480.10499999999996 186 L 762.9324999999999 186 A 11 11 0 0 1 773.9324999999999 197 L 773.9324999999999 222 L 469.10499999999996 222 Z" fill="#4A7FA5"/>
+<text x="482.10499999999996" y="209.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="15" font-weight="bold" fill="#FFFFFF">lokacija</text>
+<text x="760.9324999999999" y="208.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="10" fill="#FFFFFF" fill-opacity="0.78" text-anchor="end">hierarhija kraja</text>
+<rect x="470.10499999999996" y="222" width="302.8275" height="54" fill="#F7F9FC"/>
+<rect x="482.10499999999996" y="229" width="24" height="14" rx="4" fill="#FEF3C7"/>
+<text x="494.10499999999996" y="239.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="9" font-weight="bold" fill="#92400E" text-anchor="middle">PK</text>
+<text x="512.105" y="239.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="12.5" font-weight="bold" fill="#1F2933">id_lokacije</text>
+<text x="634.0425" y="239.5" font-family="'SF Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#6B7280">serial</text>
+<line x1="470.10499999999996" y1="249" x2="772.9324999999999" y2="249" stroke="#EFF1F5"/>
+<rect x="482.10499999999996" y="256" width="24" height="14" rx="4" fill="#DBEAFE"/>
+<text x="494.10499999999996" y="266.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="9" font-weight="bold" fill="#1D4ED8" text-anchor="middle">FK</text>
+<text x="512.105" y="266.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="12.5" font-weight="bold" fill="#1F2933">id_regije</text>
+<text x="634.0425" y="266.5" font-family="'SF Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#6B7280">→ regija</text>
+<line x1="470.10499999999996" y1="276" x2="772.9324999999999" y2="276" stroke="#EFF1F5"/>
+<text x="512.105" y="293.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="12.5" font-weight="normal" fill="#1F2933">upravna_enota</text>
+<text x="634.0425" y="293.5" font-family="'SF Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#6B7280">text</text>
+<line x1="470.10499999999996" y1="303" x2="772.9324999999999" y2="303" stroke="#EFF1F5"/>
+<text x="512.105" y="320.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="12.5" font-weight="normal" fill="#1F2933">obcina</text>
+<text x="634.0425" y="320.5" font-family="'SF Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#6B7280">text</text>
+<line x1="470.10499999999996" y1="330" x2="772.9324999999999" y2="330" stroke="#EFF1F5"/>
+<text x="512.105" y="347.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="12.5" font-weight="normal" fill="#1F2933">naselje</text>
+<text x="634.0425" y="347.5" font-family="'SF Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#6B7280">text</text>
+<line x1="470.10499999999996" y1="357" x2="772.9324999999999" y2="357" stroke="#EFF1F5"/>
+<text x="512.105" y="374.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="12.5" font-weight="normal" fill="#1F2933">postna_stevilka</text>
+<text x="634.0425" y="374.5" font-family="'SF Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#6B7280">integer</text>
+<path d="M 469.10499999999996 384 L 773.9324999999999 384 L 773.9324999999999 398 A 11 11 0 0 1 762.9324999999999 409 L 480.10499999999996 409 A 11 11 0 0 1 469.10499999999996 398 Z" fill="#FAFAFB"/>
+<line x1="470.10499999999996" y1="384" x2="772.9324999999999" y2="384" stroke="#EFF1F5"/>
+<text x="482.10499999999996" y="400.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="10.5" font-style="italic" fill="#6B7280">unique index nad coalesce(…) — NULL ni podvojen</text>
+<g filter="url(#senca)">
+<rect x="469.10499999999996" y="470" width="304.8275" height="90" rx="11" fill="#FFFFFF" stroke="#D7DBE3"/>
+</g>
+<path d="M 469.10499999999996 481 A 11 11 0 0 1 480.10499999999996 470 L 762.9324999999999 470 A 11 11 0 0 1 773.9324999999999 481 L 773.9324999999999 506 L 469.10499999999996 506 Z" fill="#7A8BA3"/>
+<text x="482.10499999999996" y="493.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="15" font-weight="bold" fill="#FFFFFF">vrsta_nepremicnine</text>
+<text x="760.9324999999999" y="492.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="10" fill="#FFFFFF" fill-opacity="0.78" text-anchor="end">šifrant</text>
+<rect x="470.10499999999996" y="506" width="302.8275" height="27" fill="#F7F9FC"/>
+<rect x="482.10499999999996" y="513" width="24" height="14" rx="4" fill="#FEF3C7"/>
+<text x="494.10499999999996" y="523.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="9" font-weight="bold" fill="#92400E" text-anchor="middle">PK</text>
+<text x="512.105" y="523.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="12.5" font-weight="bold" fill="#1F2933">id_vrste</text>
+<text x="591.6675" y="523.5" font-family="'SF Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#6B7280">serial</text>
+<line x1="470.10499999999996" y1="533" x2="772.9324999999999" y2="533" stroke="#EFF1F5"/>
+<text x="512.105" y="550.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="12.5" font-weight="normal" fill="#1F2933">ime_vrste</text>
+<text x="591.6675" y="550.5" font-family="'SF Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#6B7280">text</text>
+<text x="760.9324999999999" y="550.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="9.5" font-weight="bold" fill="#9AA3AF" text-anchor="end" letter-spacing="0.5">NN UQ</text>
+<g filter="url(#senca)">
+<rect x="913.9324999999999" y="150" width="351.29999999999995" height="117" rx="11" fill="#FFFFFF" stroke="#D7DBE3"/>
+</g>
+<path d="M 913.9324999999999 161 A 11 11 0 0 1 924.9324999999999 150 L 1254.2324999999998 150 A 11 11 0 0 1 1265.2324999999998 161 L 1265.2324999999998 186 L 913.9324999999999 186 Z" fill="#7A8BA3"/>
+<text x="926.9324999999999" y="173.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="15" font-weight="bold" fill="#FFFFFF">vir</text>
+<text x="1252.2324999999998" y="172.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="10" fill="#FFFFFF" fill-opacity="0.78" text-anchor="end">šifrant</text>
+<rect x="914.9324999999999" y="186" width="349.29999999999995" height="27" fill="#F7F9FC"/>
+<rect x="926.9324999999999" y="193" width="24" height="14" rx="4" fill="#FEF3C7"/>
+<text x="938.9324999999999" y="203.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="9" font-weight="bold" fill="#92400E" text-anchor="middle">PK</text>
+<text x="956.9324999999999" y="203.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="12.5" font-weight="bold" fill="#1F2933">id_vira</text>
+<text x="1029.4325" y="203.5" font-family="'SF Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#6B7280">serial</text>
+<line x1="914.9324999999999" y1="213" x2="1264.2324999999998" y2="213" stroke="#EFF1F5"/>
+<text x="956.9324999999999" y="230.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="12.5" font-weight="normal" fill="#1F2933">ime_vira</text>
+<text x="1029.4325" y="230.5" font-family="'SF Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#6B7280">text</text>
+<text x="1252.2324999999998" y="230.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="9.5" font-weight="bold" fill="#9AA3AF" text-anchor="end" letter-spacing="0.5">NN UQ</text>
+<line x1="914.9324999999999" y1="240" x2="1264.2324999999998" y2="240" stroke="#EFF1F5"/>
+<text x="956.9324999999999" y="257.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="12.5" font-weight="normal" fill="#1F2933">url_vira</text>
+<text x="1029.4325" y="257.5" font-family="'SF Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#6B7280">text</text>
+<g filter="url(#senca)">
+<rect x="913.9324999999999" y="322" width="351.29999999999995" height="279" rx="11" fill="#FFFFFF" stroke="#D7DBE3"/>
+</g>
+<path d="M 913.9324999999999 333 A 11 11 0 0 1 924.9324999999999 322 L 1254.2324999999998 322 A 11 11 0 0 1 1265.2324999999998 333 L 1265.2324999999998 358 L 913.9324999999999 358 Z" fill="#1F4E79"/>
+<text x="926.9324999999999" y="345.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="15" font-weight="bold" fill="#FFFFFF">nepremicnina</text>
+<text x="1252.2324999999998" y="344.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="10" fill="#FFFFFF" fill-opacity="0.78" text-anchor="end">jedro</text>
+<rect x="914.9324999999999" y="358" width="349.29999999999995" height="81" fill="#F7F9FC"/>
+<rect x="926.9324999999999" y="365" width="24" height="14" rx="4" fill="#FEF3C7"/>
+<text x="938.9324999999999" y="375.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="9" font-weight="bold" fill="#92400E" text-anchor="middle">PK</text>
+<text x="956.9324999999999" y="375.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="12.5" font-weight="bold" fill="#1F2933">id_nepremicnine</text>
+<text x="1085.9325" y="375.5" font-family="'SF Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#6B7280">serial</text>
+<line x1="914.9324999999999" y1="385" x2="1264.2324999999998" y2="385" stroke="#EFF1F5"/>
+<rect x="926.9324999999999" y="392" width="24" height="14" rx="4" fill="#DBEAFE"/>
+<text x="938.9324999999999" y="402.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="9" font-weight="bold" fill="#1D4ED8" text-anchor="middle">FK</text>
+<text x="956.9324999999999" y="402.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="12.5" font-weight="bold" fill="#1F2933">id_vrste</text>
+<text x="1085.9325" y="402.5" font-family="'SF Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#6B7280">→ vrsta_nepremicnine</text>
+<text x="1252.2324999999998" y="402.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="9.5" font-weight="bold" fill="#9AA3AF" text-anchor="end" letter-spacing="0.5">NN</text>
+<line x1="914.9324999999999" y1="412" x2="1264.2324999999998" y2="412" stroke="#EFF1F5"/>
+<rect x="926.9324999999999" y="419" width="24" height="14" rx="4" fill="#DBEAFE"/>
+<text x="938.9324999999999" y="429.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="9" font-weight="bold" fill="#1D4ED8" text-anchor="middle">FK</text>
+<text x="956.9324999999999" y="429.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="12.5" font-weight="bold" fill="#1F2933">id_lokacije</text>
+<text x="1085.9325" y="429.5" font-family="'SF Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#6B7280">→ lokacija</text>
+<text x="1252.2324999999998" y="429.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="9.5" font-weight="bold" fill="#9AA3AF" text-anchor="end" letter-spacing="0.5">NN</text>
+<line x1="914.9324999999999" y1="439" x2="1264.2324999999998" y2="439" stroke="#EFF1F5"/>
+<text x="956.9324999999999" y="456.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="12.5" font-weight="normal" fill="#1F2933">opis</text>
+<text x="1085.9325" y="456.5" font-family="'SF Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#6B7280">text</text>
+<line x1="914.9324999999999" y1="466" x2="1264.2324999999998" y2="466" stroke="#EFF1F5"/>
+<text x="956.9324999999999" y="483.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="12.5" font-weight="normal" fill="#1F2933">leto_gradnje</text>
+<text x="1085.9325" y="483.5" font-family="'SF Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#6B7280">integer</text>
+<line x1="914.9324999999999" y1="493" x2="1264.2324999999998" y2="493" stroke="#EFF1F5"/>
+<text x="956.9324999999999" y="510.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="12.5" font-weight="normal" fill="#1F2933">stevilo_sob</text>
+<text x="1085.9325" y="510.5" font-family="'SF Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#6B7280">numeric(4,1)</text>
+<line x1="914.9324999999999" y1="520" x2="1264.2324999999998" y2="520" stroke="#EFF1F5"/>
+<text x="956.9324999999999" y="537.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="12.5" font-weight="normal" fill="#1F2933">stevilo_sob_opis</text>
+<text x="1085.9325" y="537.5" font-family="'SF Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#6B7280">varchar(100)</text>
+<line x1="914.9324999999999" y1="547" x2="1264.2324999999998" y2="547" stroke="#EFF1F5"/>
+<text x="956.9324999999999" y="564.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="12.5" font-weight="normal" fill="#1F2933">nadstropje</text>
+<text x="1085.9325" y="564.5" font-family="'SF Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#6B7280">varchar(50)</text>
+<line x1="914.9324999999999" y1="574" x2="1264.2324999999998" y2="574" stroke="#EFF1F5"/>
+<text x="956.9324999999999" y="591.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="12.5" font-weight="normal" fill="#1F2933">m2</text>
+<text x="1085.9325" y="591.5" font-family="'SF Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#6B7280">numeric(10,2)</text>
+<text x="1252.2324999999998" y="591.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="9.5" font-weight="bold" fill="#9AA3AF" text-anchor="end" letter-spacing="0.5">NN</text>
+<g filter="url(#senca)">
+<rect x="1405.2324999999998" y="322" width="340.42249999999996" height="356" rx="11" fill="#FFFFFF" stroke="#D7DBE3"/>
+</g>
+<path d="M 1405.2324999999998 333 A 11 11 0 0 1 1416.2324999999998 322 L 1734.6549999999997 322 A 11 11 0 0 1 1745.6549999999997 333 L 1745.6549999999997 358 L 1405.2324999999998 358 Z" fill="#C2410C"/>
+<text x="1418.2324999999998" y="345.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="15" font-weight="bold" fill="#FFFFFF">oglas</text>
+<text x="1732.6549999999997" y="344.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="10" fill="#FFFFFF" fill-opacity="0.78" text-anchor="end">osrednja tabela</text>
+<rect x="1406.2324999999998" y="358" width="338.42249999999996" height="81" fill="#F7F9FC"/>
+<rect x="1418.2324999999998" y="365" width="24" height="14" rx="4" fill="#FEF3C7"/>
+<text x="1430.2324999999998" y="375.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="9" font-weight="bold" fill="#92400E" text-anchor="middle">PK</text>
+<text x="1448.2324999999998" y="375.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="12.5" font-weight="bold" fill="#1F2933">id_oglasa</text>
+<text x="1576.7324999999998" y="375.5" font-family="'SF Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#6B7280">serial</text>
+<line x1="1406.2324999999998" y1="385" x2="1744.6549999999997" y2="385" stroke="#EFF1F5"/>
+<rect x="1418.2324999999998" y="392" width="24" height="14" rx="4" fill="#DBEAFE"/>
+<text x="1430.2324999999998" y="402.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="9" font-weight="bold" fill="#1D4ED8" text-anchor="middle">FK</text>
+<text x="1448.2324999999998" y="402.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="12.5" font-weight="bold" fill="#1F2933">id_vira</text>
+<text x="1576.7324999999998" y="402.5" font-family="'SF Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#6B7280">→ vir</text>
+<text x="1732.6549999999997" y="402.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="9.5" font-weight="bold" fill="#9AA3AF" text-anchor="end" letter-spacing="0.5">NN</text>
+<line x1="1406.2324999999998" y1="412" x2="1744.6549999999997" y2="412" stroke="#EFF1F5"/>
+<rect x="1418.2324999999998" y="419" width="24" height="14" rx="4" fill="#DBEAFE"/>
+<text x="1430.2324999999998" y="429.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="9" font-weight="bold" fill="#1D4ED8" text-anchor="middle">FK</text>
+<text x="1448.2324999999998" y="429.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="12.5" font-weight="bold" fill="#1F2933">id_nepremicnine</text>
+<text x="1576.7324999999998" y="429.5" font-family="'SF Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#6B7280">→ nepremicnina</text>
+<text x="1732.6549999999997" y="429.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="9.5" font-weight="bold" fill="#9AA3AF" text-anchor="end" letter-spacing="0.5">NN</text>
+<line x1="1406.2324999999998" y1="439" x2="1744.6549999999997" y2="439" stroke="#EFF1F5"/>
+<text x="1448.2324999999998" y="456.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="12.5" font-weight="normal" fill="#1F2933">zunanji_id</text>
+<text x="1576.7324999999998" y="456.5" font-family="'SF Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#6B7280">text</text>
+<line x1="1406.2324999999998" y1="466" x2="1744.6549999999997" y2="466" stroke="#EFF1F5"/>
+<text x="1448.2324999999998" y="483.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="12.5" font-weight="normal" fill="#1F2933">naslov</text>
+<text x="1576.7324999999998" y="483.5" font-family="'SF Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#6B7280">text</text>
+<text x="1732.6549999999997" y="483.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="9.5" font-weight="bold" fill="#9AA3AF" text-anchor="end" letter-spacing="0.5">NN</text>
+<line x1="1406.2324999999998" y1="493" x2="1744.6549999999997" y2="493" stroke="#EFF1F5"/>
+<text x="1448.2324999999998" y="510.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="12.5" font-weight="normal" fill="#1F2933">url_oglasa</text>
+<text x="1576.7324999999998" y="510.5" font-family="'SF Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#6B7280">text</text>
+<line x1="1406.2324999999998" y1="520" x2="1744.6549999999997" y2="520" stroke="#EFF1F5"/>
+<text x="1448.2324999999998" y="537.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="12.5" font-weight="normal" fill="#1F2933">cena</text>
+<text x="1576.7324999999998" y="537.5" font-family="'SF Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#6B7280">numeric(12,2)</text>
+<text x="1732.6549999999997" y="537.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="9.5" font-weight="bold" fill="#9AA3AF" text-anchor="end" letter-spacing="0.5">NN</text>
+<line x1="1406.2324999999998" y1="547" x2="1744.6549999999997" y2="547" stroke="#EFF1F5"/>
+<text x="1448.2324999999998" y="564.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="12.5" font-weight="normal" fill="#1F2933">valuta</text>
+<text x="1576.7324999999998" y="564.5" font-family="'SF Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#6B7280">char(3)</text>
+<text x="1732.6549999999997" y="564.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="9.5" font-weight="bold" fill="#9AA3AF" text-anchor="end" letter-spacing="0.5">NN</text>
+<line x1="1406.2324999999998" y1="574" x2="1744.6549999999997" y2="574" stroke="#EFF1F5"/>
+<text x="1448.2324999999998" y="591.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="12.5" font-weight="normal" fill="#1F2933">datum_objave</text>
+<text x="1576.7324999999998" y="591.5" font-family="'SF Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#6B7280">date</text>
+<line x1="1406.2324999999998" y1="601" x2="1744.6549999999997" y2="601" stroke="#EFF1F5"/>
+<text x="1448.2324999999998" y="618.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="12.5" font-weight="normal" fill="#1F2933">datum_zajema</text>
+<text x="1576.7324999999998" y="618.5" font-family="'SF Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#6B7280">date</text>
+<text x="1732.6549999999997" y="618.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="9.5" font-weight="bold" fill="#9AA3AF" text-anchor="end" letter-spacing="0.5">NN</text>
+<path d="M 1405.2324999999998 628 L 1745.6549999999997 628 L 1745.6549999999997 667 A 11 11 0 0 1 1734.6549999999997 678 L 1416.2324999999998 678 A 11 11 0 0 1 1405.2324999999998 667 Z" fill="#FAFAFB"/>
+<line x1="1406.2324999999998" y1="628" x2="1744.6549999999997" y2="628" stroke="#EFF1F5"/>
+<text x="1418.2324999999998" y="644.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="10.5" font-style="italic" fill="#6B7280">unique (id_vira, zunanji_id)  →  uvoz je idempotenten</text>
+<text x="1418.2324999999998" y="669.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="10.5" font-style="italic" fill="#6B7280">id_nepremicnine: on delete cascade</text>
+<g filter="url(#senca)">
+<rect x="58.0" y="509" width="271.10499999999996" height="169" rx="11" fill="#FFFFFF" stroke="#D7DBE3"/>
+</g>
+<path d="M 58.0 520 A 11 11 0 0 1 69.0 509 L 318.10499999999996 509 A 11 11 0 0 1 329.10499999999996 520 L 329.10499999999996 545 L 58.0 545 Z" fill="#6B7484"/>
+<text x="71.0" y="532.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="15" font-weight="bold" fill="#FFFFFF">uporabnik</text>
+<text x="316.10499999999996" y="531.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="10" fill="#FFFFFF" fill-opacity="0.78" text-anchor="end">prijava v aplikacijo</text>
+<rect x="59.0" y="545" width="269.10499999999996" height="27" fill="#F7F9FC"/>
+<rect x="71.0" y="552" width="24" height="14" rx="4" fill="#FEF3C7"/>
+<text x="83.0" y="562.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="9" font-weight="bold" fill="#92400E" text-anchor="middle">PK</text>
+<text x="101.0" y="562.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="12.5" font-weight="bold" fill="#1F2933">uporabnisko_ime</text>
+<text x="229.5" y="562.5" font-family="'SF Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#6B7280">text</text>
+<line x1="59.0" y1="572" x2="328.10499999999996" y2="572" stroke="#EFF1F5"/>
+<text x="101.0" y="589.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="12.5" font-weight="normal" fill="#1F2933">geslo_hash</text>
+<text x="229.5" y="589.5" font-family="'SF Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#6B7280">text</text>
+<text x="316.10499999999996" y="589.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="9.5" font-weight="bold" fill="#9AA3AF" text-anchor="end" letter-spacing="0.5">NN</text>
+<line x1="59.0" y1="599" x2="328.10499999999996" y2="599" stroke="#EFF1F5"/>
+<text x="101.0" y="616.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="12.5" font-weight="normal" fill="#1F2933">vloga</text>
+<text x="229.5" y="616.5" font-family="'SF Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#6B7280">text</text>
+<text x="316.10499999999996" y="616.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="9.5" font-weight="bold" fill="#9AA3AF" text-anchor="end" letter-spacing="0.5">NN</text>
+<line x1="59.0" y1="626" x2="328.10499999999996" y2="626" stroke="#EFF1F5"/>
+<text x="101.0" y="643.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="12.5" font-weight="normal" fill="#1F2933">zadnja_prijava</text>
+<text x="229.5" y="643.5" font-family="'SF Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="11.5" fill="#6B7280">timestamp</text>
+<path d="M 58.0 653 L 329.10499999999996 653 L 329.10499999999996 667 A 11 11 0 0 1 318.10499999999996 678 L 69.0 678 A 11 11 0 0 1 58.0 667 Z" fill="#FAFAFB"/>
+<line x1="59.0" y1="653" x2="328.10499999999996" y2="653" stroke="#EFF1F5"/>
+<text x="71.0" y="669.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="10.5" font-style="italic" fill="#6B7280">check vloga in ('admin', 'uporabnik')</text>
+<rect x="58" y="724" width="715.9324999999999" height="186" rx="11" fill="#FFFFFF" stroke="#D7DBE3"/>
+<text x="73" y="754" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="11" font-weight="bold" fill="#9AA3AF" letter-spacing="1.2">LEGENDA</text>
+<rect x="73" y="771" width="24" height="14" rx="4" fill="#FEF3C7"/>
+<text x="85" y="781.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="9" font-weight="bold" fill="#92400E" text-anchor="middle">PK</text>
+<text x="107" y="782" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#6B7280">primarni ključ</text>
+<rect x="73" y="797" width="24" height="14" rx="4" fill="#DBEAFE"/>
+<text x="85" y="807.5" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="9" font-weight="bold" fill="#1D4ED8" text-anchor="middle">FK</text>
+<text x="107" y="808" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#6B7280">tuji ključ</text>
+<text x="85" y="834" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="9.5" font-weight="bold" fill="#9AA3AF" text-anchor="middle" letter-spacing="0.5">NN</text>
+<text x="107" y="834" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#6B7280">not null</text>
+<text x="85" y="860" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="9.5" font-weight="bold" fill="#9AA3AF" text-anchor="middle" letter-spacing="0.5">UQ</text>
+<text x="107" y="860" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#6B7280">unique</text>
+<text x="315.73569999999995" y="768" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#6B7280">ena vrstica šifranta …</text>
+<line x1="315.73569999999995" y1="786" x2="435.73569999999995" y2="786" stroke="#8FA0B4" stroke-width="1.6"/>
+<line x1="329.73569999999995" y1="779" x2="329.73569999999995" y2="793" stroke="#8FA0B4" stroke-width="1.6"/>
+<line x1="435.73569999999995" y1="786" x2="422.73569999999995" y2="779" stroke="#8FA0B4" stroke-width="1.6"/>
+<line x1="435.73569999999995" y1="786" x2="422.73569999999995" y2="793" stroke="#8FA0B4" stroke-width="1.6"/>
+<circle cx="417.73569999999995" cy="786" r="4" fill="#FFFFFF" stroke="#8FA0B4" stroke-width="1.6"/>
+<text x="447.73569999999995" y="790" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#6B7280">… nastopa v nič ali več vrsticah tabele, ki kaže nanjo</text>
+<line x1="315.73569999999995" y1="824" x2="343.73569999999995" y2="824" stroke="#8FA0B4" stroke-width="1.6"/>
+<line x1="322.73569999999995" y1="817" x2="322.73569999999995" y2="831" stroke="#8FA0B4" stroke-width="1.6"/>
+<circle cx="330.73569999999995" cy="824" r="4" fill="#FFFFFF" stroke="#8FA0B4" stroke-width="1.6"/>
+<text x="359.73569999999995" y="828" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#6B7280">krogec: tuji ključ je lahko NULL (lokacija brez regije)</text>
+<text x="315.73569999999995" y="858" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#6B7280">uporabnik ni povezan z ostalimi tabelami – rabimo ga samo za prijavo</text>
+<text x="73" y="890" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#6B7280">barva glave:</text>
+<rect x="166.97" y="880" width="13" height="13" rx="3" fill="#7A8BA3"/>
+<text x="185.97" y="890" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#6B7280">šifranti</text>
+<rect x="261.95" y="880" width="13" height="13" rx="3" fill="#4A7FA5"/>
+<text x="280.95" y="890" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#6B7280">lokacija</text>
+<rect x="356.92999999999995" y="880" width="13" height="13" rx="3" fill="#1F4E79"/>
+<text x="375.92999999999995" y="890" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#6B7280">nepremičnine</text>
+<rect x="477.9" y="880" width="13" height="13" rx="3" fill="#C2410C"/>
+<text x="496.9" y="890" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#6B7280">oglasi</text>
+<rect x="559.885" y="880" width="13" height="13" rx="3" fill="#6B7484"/>
+<text x="578.885" y="890" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#6B7280">prijava</text>
+<rect x="913.9324999999999" y="724" width="831.7224999999999" height="186" rx="11" fill="#FFFFFF" stroke="#8FA0B4" stroke-dasharray="6 4"/>
+<text x="928.9324999999999" y="756" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="15" font-weight="bold" fill="#1F2933">oglas_pregled</text>
+<text x="1057.9325" y="756" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="10.5" fill="#9AA3AF">pogled (view) – ni tabela</text>
+<text x="928.9324999999999" y="782" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#6B7280">Shranjena poizvedba, ki združi vse tabele okrog oglasa, da nam v Pythonu ni treba</text>
+<text x="928.9324999999999" y="800" font-family="'Helvetica Neue', Helvetica, Arial, 'DejaVu Sans', sans-serif" font-size="11.5" fill="#6B7280">vsakič pisati petih JOIN-ov. Aplikacija bere skoraj vse podatke prek njega.</text>
+<rect x="928.9324999999999" y="824" width="51.075" height="20" rx="10" fill="#C2410C" fill-opacity="0.12" stroke="#C2410C" stroke-opacity="0.35"/>
+<text x="954.4699999999999" y="838" font-family="'SF Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="10.5" fill="#C2410C" text-anchor="middle">oglas</text>
+<rect x="987.0074999999999" y="824" width="97.38" height="20" rx="10" fill="#1F4E79" fill-opacity="0.12" stroke="#1F4E79" stroke-opacity="0.35"/>
+<text x="1035.6975" y="838" font-family="'SF Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="10.5" fill="#1F4E79" text-anchor="middle">nepremicnina</text>
+<rect x="1091.3874999999998" y="824" width="137.07" height="20" rx="10" fill="#7A8BA3" fill-opacity="0.12" stroke="#7A8BA3" stroke-opacity="0.35"/>
+<text x="1159.9225" y="838" font-family="'SF Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="10.5" fill="#7A8BA3" text-anchor="middle">vrsta_nepremicnine</text>
+<rect x="1235.4574999999998" y="824" width="70.92" height="20" rx="10" fill="#4A7FA5" fill-opacity="0.12" stroke="#4A7FA5" stroke-opacity="0.35"/>
+<text x="1270.9174999999998" y="838" font-family="'SF Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="10.5" fill="#4A7FA5" text-anchor="middle">lokacija</text>
+<rect x="1313.3774999999998" y="824" width="57.69" height="20" rx="10" fill="#4A7FA5" fill-opacity="0.12" stroke="#4A7FA5" stroke-opacity="0.35"/>
+<text x="1342.2224999999999" y="838" font-family="'SF Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="10.5" fill="#4A7FA5" text-anchor="middle">regija</text>
+<rect x="1378.0674999999999" y="824" width="37.845" height="20" rx="10" fill="#7A8BA3" fill-opacity="0.12" stroke="#7A8BA3" stroke-opacity="0.35"/>
+<text x="1396.9899999999998" y="838" font-family="'SF Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="10.5" fill="#7A8BA3" text-anchor="middle">vir</text>
+<text x="928.9324999999999" y="870" font-family="'SF Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="11" fill="#6B7280">from oglas join nepremicnina join vrsta_nepremicnine join lokacija left join regija join vir</text>
+<text x="928.9324999999999" y="892" font-family="'SF Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="11" fill="#1F2933">+ izpeljani stolpec  cena_na_m2 = round(cena / nullif(m2, 0), 2)</text>
+</svg>
