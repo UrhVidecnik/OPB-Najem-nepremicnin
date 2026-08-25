@@ -28,9 +28,10 @@ filtriranje in statistično analizo.
 * **Statistika** – povprečje, mediana, minimum in maksimum najemnin, histogram
   porazdelitve cen ter primerjalne razpredelnice po regijah in vrstah
   nepremičnin. Vsi izračuni se izvedejo v bazi z agregatnimi funkcijami SQL.
-* **Dodajanje, urejanje in brisanje oglasov** – za prijavljene uporabnike
-  (brisanje je omejeno na vlogo `admin`).
-* **Registracija in prijava** – gesla so shranjena zgoščeno (bcrypt).
+* **Dodajanje oglasov** – za vsakega prijavljenega uporabnika.
+* **Urejanje in brisanje oglasov** – samo za uporabnike z vlogo `admin`.
+* **Registracija in prijava** – gesla so shranjena zgoščeno (bcrypt),
+  seja teče prek podpisanih piškotkov.
 
 ---
 
@@ -67,9 +68,13 @@ Baza ima **sedem tabel** in en pogled:
 OPB-Najem-nepremicnin/
 ├── app.py                     Spletna aplikacija (poti / routes)
 ├── init_db.py                 Ustvari shemo baze in podeli pravice
+├── podeli_pravice.py          Osveži pravice, ne da bi pobrisal podatke
+├── preveri_dostop.py          Preveri, ali javni dostop deluje in kaj sme
+├── nastavi_admina.py          Dodeli ali odvzame vlogo 'admin'
 ├── testi.py                   35 testov vseh treh nivojev
 ├── requirements.txt           Knjižnice za aplikacijo
 ├── er-nepremicnine.png        ER diagram
+├── PREDSTAVITEV.md            Scenarij za zagovor projekta
 │
 ├── Data/                      PODATKOVNI NIVO
 │   ├── create_database.sql      shema: tabele, indeksi, pogled
@@ -150,11 +155,14 @@ pip install -r requirements.txt
 
 ### 4. Povezava z bazo
 
-Aplikacija se privzeto poveže kot uporabnik `javnost`, ki sme podatke **samo
-brati** – za zagon aplikacije torej ni treba nastaviti ničesar.
+Aplikacija se privzeto poveže kot uporabnik `javnost` (geslo je zapisano
+v `Data/auth_public.py`, ker ni tajno). Ta uporabnik sme podatke **brati in
+dodajati**, ne sme pa jih **spreminjati ali brisati** – za zagon aplikacije
+torej ni treba nastaviti ničesar.
 
-Za **pisanje** v bazo (ustvarjanje tabel, uvoz podatkov) potrebuješ osebni
-dostop. Skopiraj `Data/auth_public.py` v `Data/auth.py` in vpiši svoje podatke:
+Za **urejanje in brisanje oglasov** ter za pripravo baze (ustvarjanje tabel,
+uvoz podatkov) potrebuješ osebni dostop. Skopiraj `Data/auth_public.py` v
+`Data/auth.py` in vpiši svoje podatke:
 
 ```bash
 cp Data/auth_public.py Data/auth.py     # macOS / Linux
@@ -178,6 +186,59 @@ python app.py
 ```
 
 Odpri <http://localhost:8080>. Aplikacijo ustaviš s `Ctrl+C`.
+
+---
+
+## Uporabniki in vloge
+
+V aplikaciji sta dve vlogi:
+
+| Dejanje | neprijavljen | `uporabnik` | `admin` |
+|---|:--:|:--:|:--:|
+| Brskanje, iskanje, filtri, statistika | ✔ | ✔ | ✔ |
+| Registracija in prijava | ✔ | – | – |
+| **Dodajanje** oglasov | ✘ | ✔ | ✔ |
+| **Urejanje** oglasov | ✘ | ✘ | ✔ |
+| **Brisanje** oglasov | ✘ | ✘ | ✔ |
+
+Vsak, ki se registrira, dobi vlogo `uporabnik`. Vloge namenoma **ni mogoče
+spremeniti prek spletnega vmesnika** – če bi obstajala stran "postani admin",
+bi jo lahko odprl vsakdo. Skrbnika zato določi lastnik baze iz ukazne vrstice:
+
+```bash
+python nastavi_admina.py --seznam            # kdo je v bazi in kakšno vlogo ima
+python nastavi_admina.py urh                 # obstoječega uporabnika naredi za admina
+python nastavi_admina.py jure --geslo TAJNO  # uporabnika ustvari IN naredi za admina
+python nastavi_admina.py jure --odvzemi      # skrbniške pravice odvzame
+```
+
+Sprememba začne veljati ob naslednji prijavi.
+
+### Kako je dostop zares zavarovan
+
+Zaščita je na treh nivojih – vsak sam zase ne bi zadostoval:
+
+1. **Predloge HTML** skrijejo gumbe, ki jih uporabnik ne sme uporabiti.
+   To je zgolj udobje: skrit gumb ni zaščita, saj lahko kdorkoli naslov
+   `/uredi/123` vtipka neposredno v brskalnik.
+2. **Dekoratorji v `app.py`** (`zahtevaj_prijavo`, `zahtevaj_admina`) dostop
+   zares preprečijo in vrnejo odgovor 403. Vlogo pri tem **preberejo iz baze**,
+   ne iz piškotka. Piškotka sta poleg tega **podpisana** (glej
+   `Presentation/bottleext.py`), zato si uporabnik ne more sam nastaviti
+   `vloga=admin` – spremenjen piškotek ne prestane preverjanja podpisa.
+3. **Pravice v PostgreSQL** (`Data/pravice.sql`) so zadnja obramba: uporabnik
+   `javnost` nima pravic `UPDATE` in `DELETE` nad oglasi, zato jih ne more
+   spremeniti niti, če bi se na bazo povezal mimo aplikacije.
+
+Pravice preveriš in po potrebi osvežiš z:
+
+```bash
+python preveri_dostop.py    # ali se da povezati kot 'javnost' in kaj sme
+python podeli_pravice.py    # znova izvede Data/pravice.sql (podatkov ne briše)
+```
+
+`preveri_dostop.py` v bazo ničesar ne zapiše – pravice prebere s funkcijo
+`has_table_privilege()`.
 
 ---
 

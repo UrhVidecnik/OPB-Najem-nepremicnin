@@ -69,9 +69,22 @@ DB_USER = os.environ.get("DB_USER", auth.user)
 DB_PASSWORD = os.environ.get("DB_PASSWORD", auth.password)
 DB_PORT = int(os.environ.get("DB_PORT", getattr(auth, "port", 5432)))
 
-# Če se povezujemo kot 'javnost', imamo samo bralni dostop.
-# Aplikacija to preveri in skrije gumbe za dodajanje/urejanje.
-JE_PISALNI_DOSTOP = DB_USER != "javnost"
+# ── Kaj sme narediti povezani uporabnik baze ────────────────────────────────
+#
+# Uporabnik 'javnost' (privzeti javni dostop) ima po Data/pravice.sql:
+#     SELECT nad vsemi tabelami
+#     INSERT nad tabelami oglas, nepremicnina, lokacija, regija, ...
+#     INSERT + UPDATE nad tabelo uporabnik (registracija, prijava, vloge)
+# NIMA pa pravic UPDATE in DELETE nad oglasi – urejanja in brisanja torej
+# prek javnega dostopa ni mogoče izvesti, tudi če bi kdo obšel aplikacijo.
+#
+# Osebni dostop (Data/auth.py, npr. uporabnik urhvid) ima vse pravice.
+#
+# Aplikacija ti dve zastavici prebere in ustrezno skrije gumbe – tako
+# uporabnik ne klikne na nekaj, kar bi se v bazi tako ali tako zavrnilo.
+JE_JAVNI_DOSTOP = DB_USER == "javnost"
+JE_PISALNI_DOSTOP = not JE_JAVNI_DOSTOP    # sme UPDATE in DELETE (urejanje, brisanje)
+JE_DODAJANJE_MOZNO = True                  # INSERT sme tudi 'javnost'
 
 
 # Dovoljena razvrščanja. Ključ pride iz spletnega obrazca, vrednost gre v SQL.
@@ -867,6 +880,27 @@ class Repository:
                 (datetime.now(), uporabnisko_ime),
             )
         self.conn.commit()
+
+    def nastavi_vlogo(self, uporabnisko_ime: str, vloga: str) -> Optional[Uporabnik]:
+        """Spremeni vlogo uporabnika ('admin' ali 'uporabnik').
+
+        Vrne posodobljenega uporabnika, ali None, če ga v bazi ni.
+        RETURNING * nam vrne posodobljeno vrstico takoj, zato ne
+        potrebujemo dodatnega SELECT-a.
+        """
+        with self._cur() as cur:
+            cur.execute(
+                """
+                UPDATE uporabnik
+                   SET vloga = %s
+                 WHERE uporabnisko_ime = %s
+             RETURNING *
+                """,
+                (vloga, uporabnisko_ime),
+            )
+            vrstica = cur.fetchone()
+        self.conn.commit()
+        return Uporabnik(**vrstica) if vrstica else None
 
     def seznam_uporabnikov(self) -> List[Uporabnik]:
         with self._beri() as cur:

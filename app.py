@@ -29,7 +29,10 @@ from functools import wraps
 from Data.repository import DB_NAME, DB_USER, JE_PISALNI_DOSTOP
 from Presentation.bottleext import (
     get,
+    nastavi_piskotek,
+    pobrisi_piskotek,
     post,
+    preberi_piskotek,
     redirect,
     request,
     response,
@@ -52,7 +55,22 @@ service = Service()
 auth = AuthService()
 
 
-# ── Dekoratorja za omejevanje dostopa ───────────────────────────────────────
+# ── Dekoratorji za omejevanje dostopa ───────────────────────────────────────
+#
+# PRAVILA APLIKACIJE
+#   neprijavljen  : brskanje, iskanje, statistika
+#   uporabnik     : + dodajanje oglasov
+#   admin         : + urejanje in brisanje oglasov
+#
+# Preverjanje je na dveh mestih. V predlogah skrijemo gumbe, ki jih
+# uporabnik ne sme uporabiti, tu v dekoratorjih pa dostop tudi zares
+# preprečimo – skrit gumb sam po sebi ni zaščita, saj lahko kdorkoli
+# naslov vtipka neposredno v brskalnik.
+
+def prijavljeni_uporabnik():
+    """Vrne uporabniško ime iz PODPISANEGA piškotka (ali None)."""
+    return preberi_piskotek("uporabnik")
+
 
 def zahtevaj_prijavo(f):
     """Stran je dostopna samo prijavljenim uporabnikom.
@@ -64,7 +82,7 @@ def zahtevaj_prijavo(f):
     """
     @wraps(f)
     def ovita(*args, **kwargs):
-        if not request.get_cookie("uporabnik"):
+        if not prijavljeni_uporabnik():
             return template(
                 "prijava.html", uporabnik=None, vloga=None,
                 napaka="Za to stran je potrebna prijava.",
@@ -75,17 +93,48 @@ def zahtevaj_prijavo(f):
 
 
 def zahtevaj_admina(f):
-    """Stran je dostopna samo uporabnikom z vlogo 'admin'."""
+    """Stran je dostopna samo uporabnikom z vlogo 'admin'.
+
+    Vloge NE beremo iz piškotka, ampak jo za vsako zahtevo preverimo
+    v bazi. Piškotek je pri uporabniku in bi ga ta lahko spremenil;
+    tabela `uporabnik` je edini vir resnice o tem, kdo je skrbnik.
+    """
     @wraps(f)
     def ovita(*args, **kwargs):
-        if not request.get_cookie("uporabnik"):
+        ime = prijavljeni_uporabnik()
+        if not ime:
             return template("prijava.html", uporabnik=None, vloga=None,
                             napaka="Za to stran je potrebna prijava.",
                             naslednja=request.fullpath)
-        if request.get_cookie("vloga") != "admin":
+        if not auth.je_admin(ime):
+            response.status = 403
             return template_uporabnik(
                 "napaka.html", naslov="Ni dovoljenja",
-                sporocilo="Za to dejanje potrebuješ skrbniške (admin) pravice.",
+                sporocilo="Za urejanje in brisanje oglasov potrebuješ "
+                          "skrbniške (admin) pravice. Dodajanje novih oglasov "
+                          "je na voljo vsem prijavljenim uporabnikom.",
+            )
+        return f(*args, **kwargs)
+    return ovita
+
+
+def zahtevaj_pisalni_dostop(f):
+    """Dejanje potrebuje pravici UPDATE/DELETE v bazi.
+
+    Kadar aplikacija teče prek javnega dostopa ('javnost'), baza urejanja
+    in brisanja ne dovoli. Namesto nerazumljive napake iz PostgreSQL
+    uporabniku pokažemo jasno razlago.
+    """
+    @wraps(f)
+    def ovita(*args, **kwargs):
+        if not JE_PISALNI_DOSTOP:
+            response.status = 403
+            return template_uporabnik(
+                "napaka.html", naslov="Samo bralni dostop",
+                sporocilo="Aplikacija je povezana z bazo kot uporabnik "
+                          "'javnost', ki oglase sme brati in dodajati, ne pa "
+                          "tudi spreminjati ali brisati. Za urejanje zaženi "
+                          "aplikacijo z osebnim dostopom (Data/auth.py).",
             )
         return f(*args, **kwargs)
     return ovita
@@ -271,10 +320,11 @@ def shrani_nov_oglas():
     redirect(url(f"/oglas/{nov_id}"))
 
 
-# ── Urejanje oglasa ─────────────────────────────────────────────────────────
+# ── Urejanje oglasa (samo admin) ────────────────────────────────────────────
 
 @get("/uredi/<id_oglasa:int>")
-@zahtevaj_prijavo
+@zahtevaj_admina
+@zahtevaj_pisalni_dostop
 def obrazec_uredi(id_oglasa):
     oglas = service.dobi_oglas(id_oglasa)
     if oglas is None:
@@ -285,7 +335,8 @@ def obrazec_uredi(id_oglasa):
 
 
 @post("/uredi/<id_oglasa:int>")
-@zahtevaj_prijavo
+@zahtevaj_admina
+@zahtevaj_pisalni_dostop
 def shrani_urejen_oglas(id_oglasa):
     f = request.forms
     try:
@@ -312,6 +363,7 @@ def shrani_urejen_oglas(id_oglasa):
 
 @post("/izbrisi/<id_oglasa:int>")
 @zahtevaj_admina
+@zahtevaj_pisalni_dostop
 def izbrisi_oglas(id_oglasa):
     """Brisanje je @post in ne @get namenoma: povezave (GET) brskalniki
     in roboti predhodno nalagajo, kar bi lahko pobrisalo oglase."""
@@ -339,10 +391,11 @@ def izvedi_prijavo():
                         napaka="Napačno uporabniško ime ali geslo.",
                         naslednja=naslednja)
 
-    # Piškotka za ime in vlogo. max_age=8h; path='/', da veljata povsod.
-    response.set_cookie("uporabnik", uporabnik.uporabnisko_ime,
-                        path="/", max_age=8 * 3600)
-    response.set_cookie("vloga", uporabnik.vloga, path="/", max_age=8 * 3600)
+    # Piškotka za ime in vlogo, oba PODPISANA (glej Presentation/bottleext.py).
+    # Vloga v piškotku služi samo prikazu (kateri gumbi so vidni) – pri
+    # vsakem skrbniškem dejanju jo vseeno preverimo v bazi.
+    nastavi_piskotek("uporabnik", uporabnik.uporabnisko_ime)
+    nastavi_piskotek("vloga", uporabnik.vloga)
 
     redirect(url(naslednja if naslednja and naslednja.startswith("/") else "/"))
 
@@ -370,15 +423,17 @@ def izvedi_registracijo():
                         napaka=f"Registracija ni uspela: {e}", vpisano_ime=ime or "")
 
     # Po uspešni registraciji uporabnika kar prijavimo.
-    response.set_cookie("uporabnik", ime.strip(), path="/", max_age=8 * 3600)
-    response.set_cookie("vloga", "uporabnik", path="/", max_age=8 * 3600)
+    # Nov uporabnik ima VEDNO vlogo 'uporabnik' – skrbnika lahko določi
+    # samo lastnik baze s skripto nastavi_admina.py.
+    nastavi_piskotek("uporabnik", ime.strip())
+    nastavi_piskotek("vloga", "uporabnik")
     redirect(url("/"))
 
 
 @get("/odjava")
 def odjava():
-    response.delete_cookie("uporabnik", path="/")
-    response.delete_cookie("vloga", path="/")
+    pobrisi_piskotek("uporabnik")
+    pobrisi_piskotek("vloga")
     redirect(url("/"))
 
 
@@ -388,7 +443,12 @@ if __name__ == "__main__":
     print("=" * 66)
     print(" OPB – Najem nepremičnin")
     print(f" Baza:      {DB_NAME} (uporabnik: {DB_USER})")
-    print(f" Dostop:    {'branje in pisanje' if JE_PISALNI_DOSTOP else 'samo branje'}")
+    if JE_PISALNI_DOSTOP:
+        print(" Dostop:    polni – dodajanje, urejanje in brisanje delujejo")
+    else:
+        print(" Dostop:    javni – brskanje in DODAJANJE oglasov")
+        print("            (urejanje in brisanje sta onemogočena; za to")
+        print("             potrebuješ osebni dostop v Data/auth.py)")
     print(f" Naslov:    http://localhost:{SERVER_PORT}")
     print("=" * 66)
     run(host="0.0.0.0", port=SERVER_PORT, reloader=RELOADER, debug=True)

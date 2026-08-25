@@ -125,8 +125,37 @@ class AuthService:
         return self.repository.seznam_uporabnikov()
 
     def je_admin(self, uporabnisko_ime: Optional[str]) -> bool:
-        """Ali ima ta uporabnik vlogo 'admin'?"""
+        """Ali ima ta uporabnik vlogo 'admin'?
+
+        POZOR: vlogo vedno preberemo IZ BAZE, nikoli iz piškotka.
+        Piškotek je pri uporabniku v brskalniku in bi ga znal spremeniti;
+        baza je edini vir resnice o tem, kdo je skrbnik.
+        """
         if not uporabnisko_ime:
             return False
         uporabnik = self.repository.dobi_uporabnika(uporabnisko_ime)
         return uporabnik is not None and uporabnik.je_admin
+
+    # ── Upravljanje vlog ────────────────────────────────────────────────────
+
+    def nastavi_vlogo(self, uporabnisko_ime: str, vloga: str) -> Uporabnik:
+        """Uporabniku nastavi vlogo. Ob napaki vrže ValueError.
+
+        Uporablja jo skripta nastavi_admina.py.
+        """
+        uporabnisko_ime = (uporabnisko_ime or "").strip()
+        if not uporabnisko_ime:
+            raise ValueError("Uporabniško ime je obvezno.")
+        if vloga not in ("admin", "uporabnik"):
+            raise ValueError("Neveljavna vloga (dovoljeni sta 'admin' in 'uporabnik').")
+
+        uporabnik = self.repository.nastavi_vlogo(uporabnisko_ime, vloga)
+        if uporabnik is None:
+            raise ValueError(f"Uporabnika '{uporabnisko_ime}' ni v bazi.")
+        return uporabnik
+
+    def povisaj_v_admina(self, uporabnisko_ime: str) -> Uporabnik:
+        return self.nastavi_vlogo(uporabnisko_ime, "admin")
+
+    def odvzemi_admina(self, uporabnisko_ime: str) -> Uporabnik:
+        return self.nastavi_vlogo(uporabnisko_ime, "uporabnik")

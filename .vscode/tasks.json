@@ -89,6 +89,27 @@
             "type": "shell",
             "command": "dot -Tpng -Gdpi=140 Data/er_diagram.dot -o er-nepremicnine.png && echo 'er-nepremicnine.png osvežen'",
             "problemMatcher": []
+        },
+        {
+            "label": "8 · Podeli pravice v bazi (pravice.sql)",
+            "detail": "Osveži GRANT-e za jurekr in javnost. Podatkov NE briše. Potrebuje Data/auth.py.",
+            "type": "shell",
+            "command": "./env/bin/python podeli_pravice.py",
+            "problemMatcher": []
+        },
+        {
+            "label": "9 · Preveri javni dostop (uporabnik javnost)",
+            "detail": "Ali se aplikacija lahko poveže kot 'javnost' in kaj vse sme? V bazo ne piše.",
+            "type": "shell",
+            "command": "./env/bin/python preveri_dostop.py",
+            "problemMatcher": []
+        },
+        {
+            "label": "10 · Uporabniki in vloge",
+            "detail": "Izpiše vse uporabnike aplikacije in njihove vloge (admin / uporabnik).",
+            "type": "shell",
+            "command": "./env/bin/python nastavi_admina.py --seznam",
+            "problemMatcher": []
         }
     ]
 }

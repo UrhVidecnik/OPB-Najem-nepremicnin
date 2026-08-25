@@ -98,25 +98,37 @@
             % end
         </div>
 
-        %# Gumba za urejanje/brisanje vidita samo prijavljena uporabnika.
+        %# ── Skrbniška dejanja ────────────────────────────────────────────
+        %# Urejanje in brisanje sta na voljo samo vlogi 'admin' in samo,
+        %# kadar ima povezava z bazo pravico pisanja. Gumbe skrijemo zato,
+        %# da uporabnik ne klikne na nekaj, kar bo tako ali tako zavrnjeno –
+        %# dostop pa je zares preprečen z dekoratorji v app.py.
+        % setdefault('pisalni_dostop', True)
         % if uporabnik:
         <div class="plosca">
-            <h3>Urejanje</h3>
-            <div style="display:flex; gap:8px; flex-wrap:wrap">
-                <a class="gumb" href="{{ url('/uredi/%d' % o.oglas.id_oglasa) }}">Uredi oglas</a>
+            <h3>Skrbniška dejanja</h3>
 
-                % if vloga == 'admin':
+            % if vloga == 'admin' and pisalni_dostop:
+                <div style="display:flex; gap:8px; flex-wrap:wrap">
+                    <a class="gumb" href="{{ url('/uredi/%d' % o.oglas.id_oglasa) }}">Uredi oglas</a>
+
                     %# Brisanje pošljemo s POST obrazcem, ne z navadno povezavo.
                     <form method="post" action="{{ url('/izbrisi/%d' % o.oglas.id_oglasa) }}"
                           onsubmit="return confirm('Res želiš izbrisati ta oglas?');"
                           style="display:inline">
                         <button type="submit" class="gumb gumb-nevaren">Izbriši</button>
                     </form>
-                % end
-            </div>
-            % if vloga != 'admin':
-                <p class="drobno" style="margin-top:8px; color:var(--barva-tiho)">
-                    Brisanje je na voljo samo skrbnikom (admin).
+                </div>
+            % elif vloga == 'admin':
+                <p class="drobno" style="margin-top:0; color:var(--barva-tiho)">
+                    Aplikacija je z bazo povezana kot <code>javnost</code>,
+                    zato urejanje in brisanje nista mogoča.
+                </p>
+            % else:
+                <p class="drobno" style="margin-top:0; color:var(--barva-tiho)">
+                    Urejanje in brisanje oglasov sta na voljo samo skrbnikom
+                    (admin). Nov oglas lahko dodaš na strani
+                    <a href="{{ url('/dodaj') }}">Dodaj oglas</a>.
                 </p>
             % end
         </div>
