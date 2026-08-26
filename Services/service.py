@@ -177,6 +177,25 @@ class Service:
     def najdrazji_najcenejsi(self, koliko: int = 5) -> dict:
         return self.repository.najdrazji_najcenejsi(max(1, min(koliko, 20)))
 
+    def podobni_oglasi(self, oglas: Optional[OglasDTO], koliko: int = 6) -> List[OglasDTO]:
+        """Oglasi iz iste regije s ceno v razponu ±30 % – za stran s podrobnostmi.
+
+        Poiščemo enega več, kot jih potrebujemo, ker je med zadetki tudi
+        oglas, ki ga uporabnik ravno gleda; tega iz seznama odstranimo.
+        """
+        if oglas is None or not oglas.lokacija.id_regije:
+            return []
+
+        filtri = OglasFiltriDTO(
+            id_regije=oglas.lokacija.id_regije,
+            cena_min=float(oglas.oglas.cena) * 0.7,
+            cena_max=float(oglas.oglas.cena) * 1.3,
+            urejanje="cena_asc",
+        )
+        najdeni = self.stran_oglasov(filtri, 1, koliko + 1).oglasi
+        return [o for o in najdeni
+                if o.oglas.id_oglasa != oglas.oglas.id_oglasa][:koliko]
+
     # Šifranti (spustni seznami v obrazcih)
 
     def vrste(self) -> List[VrstaNepremicnine]:

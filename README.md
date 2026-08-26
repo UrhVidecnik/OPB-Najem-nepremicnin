@@ -64,7 +64,6 @@ OPB-Najem-nepremicnin/
 │   ├── pravice.sql           GRANT ukazi
 │   ├── prikaz_baze.sql       poizvedbe za predstavitev
 │   ├── er_diagram.py         nariše ER diagram (er-nepremicnine.svg)
-│   ├── er_diagram.dot        starejša različica diagrama (Graphviz)
 │   ├── models.py             podatkovni modeli
 │   ├── repository.py         vse SQL poizvedbe
 │   ├── nalozi_v_bazo.py      uvoz CSV v bazo
@@ -155,7 +154,9 @@ pa pri tem preberemo iz baze in ne iz piškotka. Piškotki so poleg tega
 podpisani (`Presentation/bottleext.py`), zato si uporabnik ne more sam
 nastaviti `vloga=admin`. Zadnja obramba so pravice v PostgreSQL: uporabnik
 `javnost` nima pravic `UPDATE` in `DELETE` nad oglasi, zato jih ne more
-spremeniti niti, če bi se na bazo povezal mimo aplikacije.
+spremeniti niti, če bi se na bazo povezal mimo aplikacije. Nad tabelo
+`uporabnik` sme spreminjati samo stolpec `zadnja_prijava` (`GRANT UPDATE
+(zadnja_prijava)`) – vloge tudi po tej poti ni mogoče povišati.
 
 ## Priprava baze od začetka
 

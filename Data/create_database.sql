@@ -150,7 +150,10 @@ CREATE TABLE oglas (
         FOREIGN KEY (id_vira)         REFERENCES vir (id_vira),
     CONSTRAINT fk_oglas_nepremicnina
         FOREIGN KEY (id_nepremicnine) REFERENCES nepremicnina (id_nepremicnine)
-        ON DELETE CASCADE,            -- brisanje oglasa pobriše tudi nepremičnino
+        -- CASCADE deluje v smeri tujega ključa: brisanje NEPREMIČNINE
+        -- pobriše tudi njene oglase. Obratno ne velja – ko brišemo oglas,
+        -- nepremičnino odstranimo sami (glej repository.izbrisi_oglas).
+        ON DELETE CASCADE,
 
     CONSTRAINT uq_oglas_zunanji
         UNIQUE (id_vira, zunanji_id),

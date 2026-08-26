@@ -8,7 +8,7 @@ SQL injection.
 
 import os
 from contextlib import contextmanager
-from datetime import date, datetime
+from datetime import datetime
 from typing import List, Optional, Tuple
 
 import psycopg2

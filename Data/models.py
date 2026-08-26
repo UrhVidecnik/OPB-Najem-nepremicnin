@@ -176,11 +176,12 @@ class OglasDTO:
     v katerem je vse. V predlogi potem pišemo npr. `oglas.lokacija.prikaz`.
     """
 
-    oglas: Oglas = field(default_factory=Oglas)
-    nepremicnina: Nepremicnina = field(default_factory=Nepremicnina)
-    lokacija: Lokacija = field(default_factory=Lokacija)
-    vrsta: VrstaNepremicnine = field(default_factory=VrstaNepremicnine)
-    vir: Vir = field(default_factory=Vir)
+    # Deli so obvezni: OglasDTO brez oglasa ali nepremičnine nima smisla.
+    oglas: Oglas
+    nepremicnina: Nepremicnina
+    lokacija: Lokacija
+    vrsta: VrstaNepremicnine
+    vir: Vir
     cena_na_m2: Optional[float] = field(default=None)
 
 

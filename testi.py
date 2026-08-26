@@ -180,7 +180,7 @@ print("\n[3] Podatkovni nivo – branje")
 
 @test("Povezava z bazo deluje in tabele obstajajo")
 def _():
-    with repo._cur() as cur:
+    with repo._beri() as cur:
         cur.execute("""
             SELECT table_name FROM information_schema.tables
             WHERE table_schema = 'public'
@@ -193,7 +193,7 @@ def _():
 
 @test("Pogled oglas_pregled obstaja in vrne stolpec cena_na_m2")
 def _():
-    with repo._cur() as cur:
+    with repo._beri() as cur:
         cur.execute("SELECT * FROM oglas_pregled LIMIT 1")
         vrstica = cur.fetchone()
     if vrstica is not None:
@@ -303,7 +303,7 @@ def _():
 
 @test("Uvoz je idempotenten – ni podvojenih zunanjih ID-jev")
 def _():
-    with repo._cur() as cur:
+    with repo._beri() as cur:
         cur.execute("""
             SELECT COUNT(*) AS n FROM (
                 SELECT id_vira, zunanji_id FROM oglas

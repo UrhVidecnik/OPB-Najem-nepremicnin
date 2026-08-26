@@ -50,7 +50,14 @@ GRANT USAGE ON ALL SEQUENCES IN SCHEMA public TO javnost;
 ALTER DEFAULT PRIVILEGES IN SCHEMA public
     GRANT USAGE ON SEQUENCES TO javnost;
 
--- Tabela uporabnik: registracija (INSERT), beleženje zadnje prijave in
--- dodeljevanje vlog s skripto nastavi_admina.py (UPDATE).
+-- Tabela uporabnik: registracija (INSERT) in beleženje zadnje prijave.
 -- (Gesla so bcrypt zgoščena, zato branje tabele ne razkrije gesel.)
-GRANT INSERT, UPDATE ON uporabnik TO javnost;
+--
+-- UPDATE podelimo samo nad STOLPCEM zadnja_prijava. Če bi ga podelili nad
+-- celo tabelo, bi lahko kdorkoli – geslo uporabnika 'javnost' je javno –
+-- mimo aplikacije pognal UPDATE uporabnik SET vloga = 'admin' ali prepisal
+-- tuj geslo_hash. Vloge dodeljuje lastnik baze s skripto nastavi_admina.py,
+-- ki se poveže prek Data/auth.py.
+GRANT INSERT ON uporabnik TO javnost;
+REVOKE UPDATE ON uporabnik FROM javnost;
+GRANT UPDATE (zadnja_prijava) ON uporabnik TO javnost;

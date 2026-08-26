@@ -175,22 +175,9 @@ def podrobnosti_oglasa(id_oglasa):
             sporocilo=f"Oglasa s številko {id_oglasa} ni v bazi.",
         )
 
-    # Podobni oglasi: ista regija, cena ±30 %.
-    from Data.models import OglasFiltriDTO
-    podobni = []
-    if oglas.lokacija.id_regije:
-        podobni_filtri = OglasFiltriDTO(
-            id_regije=oglas.lokacija.id_regije,
-            cena_min=float(oglas.oglas.cena) * 0.7,
-            cena_max=float(oglas.oglas.cena) * 1.3,
-            urejanje="cena_asc",
-        )
-        podobni = [
-            o for o in service.stran_oglasov(podobni_filtri, 1, 7).oglasi
-            if o.oglas.id_oglasa != id_oglasa
-        ][:6]
-
-    return template_uporabnik("oglas.html", o=oglas, podobni=podobni)
+    # Podobni oglasi: ista regija, cena ±30 % (izbor sestavi Service).
+    return template_uporabnik("oglas.html", o=oglas,
+                              podobni=service.podobni_oglasi(oglas))
 
 
 # Statistika
@@ -319,6 +306,13 @@ def shrani_urejen_oglas(id_oglasa):
     except ValueError as e:
         return template_uporabnik("uredi_oglas.html",
                                   o=service.dobi_oglas(id_oglasa), napaka=str(e))
+    except Exception as e:
+        # Brez rollback() bi povezava obtičala v prekinjeni transakciji
+        # in vse nadaljnje strani bi vračale napako.
+        service.repository.conn.rollback()
+        return template_uporabnik(
+            "uredi_oglas.html", o=service.dobi_oglas(id_oglasa),
+            napaka=f"Napaka pri shranjevanju: {e}")
 
     # redirect() šele zunaj try (glej razlago pri /dodaj).
     redirect(url(f"/oglas/{id_oglasa}"))
@@ -332,7 +326,17 @@ def shrani_urejen_oglas(id_oglasa):
 def izbrisi_oglas(id_oglasa):
     """Brisanje je @post in ne @get namenoma: povezave (GET) brskalniki
     in roboti predhodno nalagajo, kar bi lahko pobrisalo oglase."""
-    service.izbrisi_oglas(id_oglasa)
+    try:
+        service.izbrisi_oglas(id_oglasa)
+    except Exception as e:
+        service.repository.conn.rollback()
+        response.status = 500
+        return template_uporabnik(
+            "napaka.html", naslov="Brisanje ni uspelo",
+            sporocilo=f"Oglasa ni bilo mogoče izbrisati: {e}",
+        )
+
+    # redirect() šele zunaj try (glej razlago pri /dodaj).
     redirect(url("/oglasi"))
 
 
@@ -362,7 +366,12 @@ def izvedi_prijavo():
     nastavi_piskotek("uporabnik", uporabnik.uporabnisko_ime)
     nastavi_piskotek("vloga", uporabnik.vloga)
 
-    redirect(url(naslednja if naslednja and naslednja.startswith("/") else "/"))
+    # Preusmerimo samo na NAŠO stran. Sam startswith("/") ne zadošča:
+    # "//zlonamerna.si/" se začne z "/", brskalnik pa ga razume kot
+    # absoluten naslov in bi uporabnika odnesel s strani.
+    varna = naslednja if (naslednja and naslednja.startswith("/")
+                          and not naslednja.startswith("//")) else "/"
+    redirect(url(varna))
 
 
 @get("/registracija")
