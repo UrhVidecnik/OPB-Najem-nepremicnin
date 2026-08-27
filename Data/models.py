@@ -1,8 +1,7 @@
-"""Podatkovni modeli.
-
+"""
+Podatkovni modeli
 Vsak razred ustreza eni tabeli v bazi. Razredi s končnico DTO niso tabele,
-ampak združujejo podatke iz več tabel skupaj (npr. oglas + nepremičnina +
-lokacija), da jih lahko naenkrat podamo predlogi HTML.
+ampak združujejo podatke iz več tabel skupaj.
 """
 
 from dataclasses import dataclass, field
@@ -17,9 +16,9 @@ from dataclasses_json import dataclass_json
 @dataclass_json
 @dataclass
 class Vir:
-    """Portal, s katerega je oglas pobran (nepremicnine.net, bolha.com ...)."""
+    """Portal, s katerega je oglas pobran (nepremicnine.net)"""
 
-    id_vira: Optional[int] = field(default=None)   # None dokler ga baza ne dodeli
+    id_vira: Optional[int] = field(default=None)   
     ime_vira: str = field(default="")
     url_vira: Optional[str] = field(default=None)
 
@@ -29,7 +28,7 @@ class Vir:
 @dataclass_json
 @dataclass
 class VrstaNepremicnine:
-    """Šifrant vrst: Stanovanje, Hiša, Poslovni prostor ..."""
+    """Šifrant vrst: Stanovanje, hiša..."""
 
     id_vrste: Optional[int] = field(default=None)
     ime_vrste: str = field(default="")
@@ -47,7 +46,6 @@ class Regija:
     drzava: str = field(default="SI")
 
     def __post_init__(self):
-        # preverimo, da v bazo ne pošljemo nesmisla
         if self.drzava not in ("SI", "HR"):
             raise ValueError(f"Neveljavna država: {self.drzava!r} (dovoljeno: SI, HR)")
 
@@ -110,8 +108,6 @@ class Nepremicnina:
     m2: float = field(default=0.0)
 
     def __post_init__(self):
-        # Ista pravila kot CHECK omejitve v bazi. Preverimo jih ŽE TUKAJ,
-        # da dobimo lepo slovensko napako namesto surove napake iz Postgresa.
         if self.m2 is None or float(self.m2) <= 0:
             raise ValueError("Površina (m2) mora biti večja od 0.")
 
@@ -127,13 +123,13 @@ class Nepremicnina:
 @dataclass_json
 @dataclass
 class Oglas:
-    """Objava za najem: naslov, cena, povezava, datumi."""
+    """Objava za najem: naslov, cena, povezava, datum"""
 
     id_oglasa: Optional[int] = field(default=None)
     id_vira: int = field(default=0)
     id_nepremicnine: int = field(default=0)
 
-    zunanji_id: Optional[str] = field(default=None)   # ID oglasa na portalu
+    zunanji_id: Optional[str] = field(default=None)  
     naslov: str = field(default="")
     url_oglasa: Optional[str] = field(default=None)
     cena: float = field(default=0.0)
@@ -165,7 +161,7 @@ class Uporabnik:
         return self.vloga == "admin"
 
 
-# DTO razredi – ti NISO tabele v bazi
+# DTO razredi
 
 @dataclass_json
 @dataclass
@@ -193,11 +189,11 @@ class OglasFiltriDTO:
     Repository iz teh polj sestavi WHERE del poizvedbe.
     """
 
-    iskanje: Optional[str] = field(default=None)        # prosto besedilo (naslov/opis)
+    iskanje: Optional[str] = field(default=None)        
     id_vrste: Optional[int] = field(default=None)
     id_regije: Optional[int] = field(default=None)
     id_lokacije: Optional[int] = field(default=None)
-    drzava: Optional[str] = field(default=None)         # 'SI' / 'HR'
+    drzava: Optional[str] = field(default=None)       
     id_vira: Optional[int] = field(default=None)
 
     cena_min: Optional[float] = field(default=None)
@@ -270,7 +266,7 @@ class StranDTO:
 
     @property
     def stevilo_strani(self) -> int:
-        """Zaokrožimo NAVZGOR: 51 oglasov / 25 na stran = 3 strani."""
+        """ Zaokrožimo navzgor """
         if self.na_stran <= 0:
             return 1
         return max(1, (self.skupaj + self.na_stran - 1) // self.na_stran)
