@@ -1,10 +1,5 @@
-"""Podatkovni nivo: vse SQL poizvedbe projekta.
+""" SQL poizvedbe in dostop do baze PostgreSQL """
 
-Edina datoteka, ki se pogovarja s PostgreSQL; nivoji nad njo delajo samo
-s Python objekti iz Data/models.py. Parametrov ne lepimo v SQL z f-stringi,
-ampak jih podamo prek %s - psycopg2 poskrbi za ubežanje in s tem prepreči
-SQL injection.
-"""
 
 import os
 from contextlib import contextmanager
@@ -30,19 +25,15 @@ from Data.models import (
     VrstaNepremicnine,
 )
 
-# Poskrbimo, da psycopg2 vrača prave Python nize (šumniki ČŠŽ).
+# poskrbimo za šumnike
 psycopg2.extensions.register_type(psycopg2.extensions.UNICODE)
 
 
-# Podatke za povezavo iščemo po vrsti: okoljske spremenljivke (uporablja jih
-# Binder), nato Data/auth.py (osebni dostop s pravico pisanja, ni v gitu) in
-# nazadnje Data/auth_public.py (javni bralni dostop).
-
 try:
-    import Data.auth as auth            # type: ignore
+    import Data.auth as auth            
     _VIR_NASTAVITEV = "Data/auth.py"
 except ImportError:
-    import Data.auth_public as auth     # type: ignore
+    import Data.auth_public as auth     
     _VIR_NASTAVITEV = "Data/auth_public.py"
 
 
@@ -54,9 +45,8 @@ DB_PORT = int(os.environ.get("DB_PORT", getattr(auth, "port", 5432)))
 
 # Uporabnik 'javnost' ima po Data/pravice.sql pravico SELECT nad vsemi tabelami
 # in INSERT nad oglasi, nepremičninami, lokacijami in uporabniki, nima pa UPDATE
-# in DELETE nad oglasi – urejanja in brisanja torej ni mogoče izvesti niti mimo
-# aplikacije. Osebni dostop iz Data/auth.py ima vse pravice; aplikacija to
-# zastavico prebere in gumbe za urejanje po potrebi skrije.
+# in DELETE nad oglasi. Osebni dostop iz Data/auth.py ima vse pravice; aplikacija to
+# prebere in gumbe za urejanje po potrebi skrije.
 JE_JAVNI_DOSTOP = DB_USER == "javnost"
 JE_PISALNI_DOSTOP = not JE_JAVNI_DOSTOP    # sme UPDATE in DELETE (urejanje, brisanje)
 JE_DODAJANJE_MOZNO = True                  # INSERT sme tudi 'javnost'
@@ -93,12 +83,8 @@ class Repository:
         # autocommit=False (privzeto) – transakcijo zaključimo sami s commit().
 
     def _cur(self):
-        """Kurzor za PISANJE. Vrstice vrača kot slovarje.
-
-        Brez RealDictCursor bi vrstice dobili kot terke in bi do stolpcev
-        dostopali z row[0], row[1] ... – kar je neberljivo in krhko.
-        Z njim pišemo row["cena"].
-
+        """
+        Kurzor za PISANJE. Vrstice vrne kot slovarje.
         Za tem kurzorjem je treba poklicati self.conn.commit().
         """
         return self.conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
@@ -107,18 +93,11 @@ class Repository:
     def _beri(self):
         """Kurzor za BRANJE, ki transakcijo na koncu vedno zaključi.
 
-        ZAKAJ je to potrebno:
-        psycopg2 ob prvem ukazu SAM odpre transakcijo – tudi pri navadnem
-        SELECT. Če je ne zaključimo, povezava obtiči v stanju
-        'idle in transaction' in DRŽI ZAKLEPE (locks) na prebranih tabelah.
-        Posledice na skupnem strežniku FMF:
-          - ukaz DROP TABLE (npr. iz init_db.py) čaka v nedogled;
-          - Postgres ne more počistiti starih vrstic (VACUUM);
-          - dolge odprte transakcije zasedajo povezave.
-
-        Rešitev: po branju pokličemo rollback(). Ker nismo ničesar
-        spreminjali, rollback ne "razveljavi" nobenega podatka – samo
-        zaključi transakcijo in sprosti zaklepe.
+        psycopg2 ob vsakem ukazu (tudi SELECT) sam odpre transakcijo. Če je
+        ne zaključimo, povezava obtiči v 'idle in transaction' in drži
+        zaklepe na prebranih tabelah - to na skupnem strežniku blokira
+        DROP TABLE, VACUUM in zaseda povezave. Rollback po branju samo
+        sprosti zaklepe, ničesar ne razveljavi.
         """
         cur = self.conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         try:
@@ -442,11 +421,7 @@ class Repository:
             return cur.fetchone() is not None
 
     def obstojeci_zunanji_idji(self, id_vira: int) -> set:
-        """Vsi zunanji ID-ji tega vira naenkrat.
-
-        Pri uvozu 2700 oglasov je to ENA poizvedba namesto 2700 –
-        uvoz je s tem bistveno hitrejši.
-        """
+        """Vsi zunanji ID-ji tega vira naenkrat """
         with self._beri() as cur:
             cur.execute(
                 "SELECT zunanji_id FROM oglas WHERE id_vira = %s AND zunanji_id IS NOT NULL",
