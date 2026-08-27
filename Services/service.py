@@ -1,8 +1,7 @@
 """Aplikacijski nivo med app.py in bazo.
 
 Preveri in pretvori podatke iz spletnih obrazcev (kjer je vse niz) ter
-združi več klicev repozitorija v eno operacijo - "dodaj oglas" pomeni
-lokacija + nepremičnina + oglas.
+združi več klicev repozitorija v eno operacijo.
 """
 
 from typing import List, Optional
@@ -31,12 +30,9 @@ class Service:
     """Poslovna logika aplikacije."""
 
     def __init__(self, repository: Optional[Repository] = None):
-        # Repozitorij lahko podamo od zunaj (uporabno pri testiranju,
-        # kjer podtaknemo lažni repozitorij); sicer si ga ustvarimo sami.
         self.repository = repository or Repository()
 
-    # Iz obrazca vedno pride niz, prazno polje pa prazen niz.
-    # Naslednje tri metode ga varno pretvorijo v število ali None.
+    # pretvorba niza v int/float/besedilo
 
     @staticmethod
     def v_int(vrednost) -> Optional[int]:
@@ -76,7 +72,7 @@ class Service:
         """
         drzava = self.v_besedilo(obrazec.get("drzava"))
         if drzava not in (None, "SI", "HR"):
-            drzava = None      # neveljavno vrednost tiho ignoriramo
+            drzava = None      
 
         urejanje = self.v_besedilo(obrazec.get("urejanje")) or "cena_asc"
         if urejanje not in UREJANJA:
@@ -101,11 +97,9 @@ class Service:
         return filtri
 
     def preveri_filtre(self, filtri: Optional[OglasFiltriDTO]) -> None:
-        """Zavrne nesmiselne filtre (npr. min > max).
-
-        Namesto da bi vrgli napako in podrli stran, tu vrednosti
-        raje POPRAVIMO – uporabnik dobi rezultate, ne pa napake 500.
-        """
+        """Popravi nesmiselne filtre (npr. zamenjan min/max), namesto da bi
+        vrgli napako - uporabnik dobi rezultate"""
+        
         if filtri is None:
             return
 
@@ -169,7 +163,7 @@ class Service:
     def porazdelitev_cen(
         self, filtri: Optional[OglasFiltriDTO] = None, sirina_razreda: int = 250
     ) -> List[dict]:
-        """Podatki za stolpčni diagram cen. Širino razreda omejimo na razumno."""
+        """Podatki za stolpčni diagram cen"""
         self.preveri_filtre(filtri)
         sirina_razreda = max(50, min(int(sirina_razreda), 2000))
         return self.repository.porazdelitev_cen(filtri, sirina_razreda)
@@ -232,11 +226,8 @@ class Service:
         stevilo_sob_opis: Optional[str] = None,
         nadstropje: Optional[str] = None,
     ) -> OglasDTO:
-        """Doda nov oglas – skupaj z nepremičnino in po potrebi novo lokacijo.
-
-        Vrne cel OglasDTO, da ga lahko takoj prikažemo uporabniku.
-        Če karkoli ni v redu, vrže ValueError s SLOVENSKIM sporočilom,
-        ki ga app.py prikaže nad obrazcem.
+        """
+        Doda nov oglas, skupaj z nepremičnino in po potrebi novo lokacijo.
         """
         # --- validacija ---
         naslov = self.v_besedilo(naslov)
@@ -250,12 +241,12 @@ class Service:
         if cena < 0:
             raise ValueError("Cena ne sme biti negativna.")
         if cena > 1_000_000:
-            raise ValueError("Cena je nerealno visoka.")
+            raise ValueError("Cena je previsoka.")
 
         if m2 is None or m2 <= 0:
             raise ValueError("Površina mora biti večja od 0.")
         if m2 > 10_000:
-            raise ValueError("Površina je nerealno velika.")
+            raise ValueError("Površina je prevelika.")
 
         if id_vrste is None:
             raise ValueError("Izbrati moraš vrsto nepremičnine.")

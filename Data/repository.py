@@ -251,11 +251,8 @@ class Repository:
         naselje: Optional[str] = None,
         postna_stevilka: Optional[int] = None,
     ) -> Lokacija:
-        """Vrne lokacijo z natanko temi štirimi vrednostmi ali jo ustvari.
-
-        Pozor na `IS NOT DISTINCT FROM`: navadni `=` v SQL vrne NULL
-        (torej "ne ujema se"), kadar je katera stran NULL.
-        `IS NOT DISTINCT FROM` pa NULL primerja z NULL kot enaka.
+        """
+        Vrne lokacijo s temi štirimi vrednostmi ali jo ustvari.
         """
         with self._cur() as cur:
             cur.execute(
@@ -381,11 +378,11 @@ class Repository:
         return og
 
     def izbrisi_oglas(self, id_oglasa: int) -> bool:
-        """Pobriše oglas IN pripadajočo nepremičnino.
+        """Pobriše oglas in pripadajočo nepremičnino.
 
         Nepremičnino brišemo eksplicitno, ker tuji ključ kaže v nasprotno
         smer (oglas -> nepremicnina), zato je ON DELETE CASCADE sam ne odstrani.
-        Obe brisanji sta v ISTI transakciji: če druga spodleti, se prva razveljavi.
+        Obe brisanji sta v isti transakciji: če druga spodleti, se prva razveljavi.
         """
         with self._cur() as cur:
             cur.execute(
@@ -435,8 +432,6 @@ class Repository:
         """Iz filtrov sestavi WHERE del poizvedbe in seznam parametrov.
 
         Vrne npr. ("WHERE o.cena >= %s AND n.m2 <= %s", [500, 80]).
-        Ta ista metoda se uporabi pri seznamu, štetju IN statistiki,
-        zato so rezultati vedno usklajeni.
         """
         if f is None:
             return "", []
@@ -504,7 +499,7 @@ class Repository:
             return "", []
         return " WHERE " + " AND ".join(pogoji), vrednosti
 
-    # Skupni FROM z JOIN-i – uporabimo ga v več metodah, da ga ne podvajamo.
+    # Skupni FROM z JOIN-i – uporabimo ga v več metodah
     _OSNOVA = """
         FROM oglas o
             JOIN nepremicnina       n  ON n.id_nepremicnine = o.id_nepremicnine
@@ -583,8 +578,8 @@ class Repository:
             {where}
             ORDER BY {order_by}, o.id_oglasa
         """
-        # Dodamo še id_oglasa kot zadnji kriterij: brez njega bi oglasi
-        # z enako ceno lahko med stranmi "skakali" sem ter tja.
+        # id_oglasa kot zadnji kriterij: brez njega bi oglasi
+        # z enako ceno lahko med stranmi skočili gor/dol
 
         if limit is not None:
             sql += " LIMIT %s OFFSET %s"
@@ -603,7 +598,6 @@ class Repository:
         """Ena stran rezultatov skupaj s podatki za navigacijo."""
         skupaj = self.prestej_oglase(filtri)
 
-        # Popravimo številko strani, če je uporabnik vpisal nesmisel v URL.
         stevilo_strani = max(1, (skupaj + na_stran - 1) // na_stran)
         stran = max(1, min(stran, stevilo_strani))
 
@@ -636,10 +630,8 @@ class Repository:
     # STATISTIKA
 
     def statistika(self, filtri: Optional[OglasFiltriDTO] = None) -> StatistikaDTO:
-        """Agregatne funkcije nad (filtriranimi) oglasi.
-
-        PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY ...) je standardni
-        SQL način za mediano – Postgres nima funkcije MEDIAN().
+        """
+        Agregatne funkcije nad (filtriranimi) oglasi.
         """
         where, vrednosti = self._sestavi_pogoje(filtri)
         sql = f"""
@@ -682,10 +674,9 @@ class Repository:
     def statistika_po_regijah(
         self, filtri: Optional[OglasFiltriDTO] = None, min_oglasov: int = 5
     ) -> List[VrsticaPoRegijiDTO]:
-        """GROUP BY regija – po katerih regijah je najem najdražji.
-
-        HAVING odreže regije z manj kot `min_oglasov` oglasi, ker je
-        povprečje iz dveh oglasov nezanesljivo.
+        """
+        GROUP BY regija – po katerih regijah je najem najdražji.
+        HAVING odreže regije z manj kot `min_oglasov` oglasi
         """
         where, vrednosti = self._sestavi_pogoje(filtri)
         sql = f"""
@@ -736,8 +727,6 @@ class Repository:
         """
         with self._beri() as cur:
             cur.execute(sql, vrednosti)
-            # Postgres vrne AVG kot Decimal; pretvorimo v float, da se v
-            # predlogah lepo formatira z npr. "%.2f".
             return [
                 {
                     "ime_vrste": v["ime_vrste"],
@@ -752,11 +741,10 @@ class Repository:
     def porazdelitev_cen(
         self, filtri: Optional[OglasFiltriDTO] = None, sirina_razreda: int = 250
     ) -> List[dict]:
-        """Histogram cen: koliko oglasov je v razredu 0-250 €, 250-500 € ...
-
-        Trik: `WIDTH_BUCKET` bi bil eleganten, a potrebuje fiksne meje.
-        Namesto tega ceno celoštevilsko delimo s širino razreda –
-        FLOOR(cena / 250) * 250 nam da spodnjo mejo razreda.
+        """Histogram cen po razredih širine `sirina_razreda`.
+ 
+        FLOOR(cena / širina) * širina nam da spodnjo mejo razreda -
+        preprostejše kot WIDTH_BUCKET, ki potrebuje vnaprej fiksne meje.
         """
         where, vrednosti = self._sestavi_pogoje(filtri)
         sql = f"""
@@ -817,9 +805,7 @@ class Repository:
     def nastavi_vlogo(self, uporabnisko_ime: str, vloga: str) -> Optional[Uporabnik]:
         """Spremeni vlogo uporabnika ('admin' ali 'uporabnik').
 
-        Vrne posodobljenega uporabnika, ali None, če ga v bazi ni.
-        RETURNING * nam vrne posodobljeno vrstico takoj, zato ne
-        potrebujemo dodatnega SELECT-a.
+        RETURNING * takoj vrne posodobljeno vrstico, brez dodatnega SELECT-a.
         """
         with self._cur() as cur:
             cur.execute(
