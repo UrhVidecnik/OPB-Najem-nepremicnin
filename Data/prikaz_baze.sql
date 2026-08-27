@@ -221,11 +221,3 @@ HAVING COUNT(*) > 1;
 -- uporabiti idx_oglas_cena namesto branja celotne tabele (Seq Scan).
 EXPLAIN ANALYZE
 SELECT * FROM oglas WHERE cena BETWEEN 800 AND 1200;
-
-SELECT * FROM lokacija
-SELECT * FROM nepremicnina
-SELECT * FROM regija
-SELECT * FROM oglas
-SELECT * FROM uporabnik
-SELECT * FROM vir
-SELECT * FROM vrsta_nepremicnine
