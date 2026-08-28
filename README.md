@@ -32,7 +32,7 @@ filtriranje in statistično analizo.
 | Tabela | Pomen |
 |---|---|
 | `vir` | portal, s katerega je oglas pobran |
-| `vrsta_nepremicnine` | šifrant: Stanovanje, Hiša, … |
+| `vrsta_nepremicnine` | šifrant vrst; zajeli smo samo `Stanovanje` |
 | `regija` | regija in država (`SI` / `HR`) |
 | `lokacija` | upravna enota, občina in naselje znotraj regije |
 | `nepremicnina` | m², sobe, leto gradnje, nadstropje |
@@ -42,6 +42,11 @@ filtriranje in statistično analizo.
 
 Regijo smo ločili od lokacije, ker se v podatkih ponovi na stotine krat;
 država je lastnost regije, saj vsaka regija pripada natanko eni državi.
+Šifrant `vrsta_nepremicnine` je pripravljen za več vrst, v zajetih podatkih
+pa nastopa samo `Stanovanje` – scraper smo usmerili na oglase za oddajo
+stanovanj. Shema zato brez sprememb prenese tudi hiše ali poslovne
+prostore, če bi zajem razširili.
+
 Oglas hrani tudi `zunanji_id` (ID oglasa na portalu), omejitev
 `UNIQUE (id_vira, zunanji_id)` pa poskrbi, da uvoz podatkov lahko poženemo
 večkrat, ne da bi se oglasi podvojili.

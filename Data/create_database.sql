@@ -1,7 +1,7 @@
 -- Shema baze: tabele, indeksi in pogled oglas_pregled.
 
 
--- Vsakič ob zagonu te datoteke se baza resitira in na novo vzpostavi (brisanje obstoječih tabel in podatkov v njih)
+-- Vsakič ob zagonu te datoteke se baza resetira in na novo vzpostavi (brisanje obstoječih tabel in podatkov v njih)
 -- CASCADE poskrbi, da se pobrišejo tudi tuji ključi, ki kažejo na tabelo.
 DROP VIEW  IF EXISTS oglas_pregled CASCADE;
 
@@ -26,17 +26,19 @@ COMMENT ON TABLE vir IS 'Spletni portal, s katerega je bil oglas pobran.';
 
 
 -- 2. VRSTA NEPREMIČNINE
+-- Šifrant je pripravljen za več vrst, v naših podatkih pa je samo
+-- 'Stanovanje' - scraper je zajel oglase za oddajo stanovanj.
 
 CREATE TABLE vrsta_nepremicnine (
     id_vrste  SERIAL PRIMARY KEY,
     ime_vrste TEXT NOT NULL UNIQUE
 );
 
-COMMENT ON TABLE vrsta_nepremicnine IS 'Šifrant vrst nepremičnin (Stanovanje, Hiša, ...).';
+COMMENT ON TABLE vrsta_nepremicnine IS 'Šifrant vrst nepremičnin; zajeli smo samo Stanovanje.';
 
 
 -- 3. REGIJA
--- Rregijo ločimo v svojo tabelo, ker se v podatkih ponovi velikokrat - normalizacija
+-- Regijo ločimo v svojo tabelo, ker se v podatkih ponovi velikokrat - normalizacija
 -- vsaka regija pripada eni državi
 
 CREATE TABLE regija (

@@ -28,7 +28,7 @@ class Vir:
 @dataclass_json
 @dataclass
 class VrstaNepremicnine:
-    """Šifrant vrst: Stanovanje, hiša..."""
+    """Šifrant vrst nepremičnin; v naših podatkih je samo Stanovanje."""
 
     id_vrste: Optional[int] = field(default=None)
     ime_vrste: str = field(default="")
