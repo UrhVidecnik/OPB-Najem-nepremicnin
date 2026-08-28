@@ -9,8 +9,8 @@ import sys
 
 from Data.repository import DB_HOST, DB_NAME, DB_USER, JE_PISALNI_DOSTOP, Repository
 
-# Poti do SQL datotek – sestavimo jih glede na mesto TE datoteke,
-# da skripta deluje ne glede na to, iz katere mape jo poženeš.
+# Poti sestavimo glede na mesto te datoteke, da skripta deluje ne glede
+# na to, iz katere mape jo poženeš.
 KORENSKA_MAPA = os.path.dirname(os.path.abspath(__file__))
 SHEMA_SQL = os.path.join(KORENSKA_MAPA, "Data", "create_database.sql")
 PRAVICE_SQL = os.path.join(KORENSKA_MAPA, "Data", "pravice.sql")
@@ -31,7 +31,7 @@ def main() -> int:
         print(" Ustvari Data/auth.py s svojimi podatki (glej Data/auth_public.py).")
         return 1
 
-    # --force preskoči vprašanje (uporabno v skriptah in na Binderju)
+    # --force preskoči vprašanje
     if "--force" not in sys.argv:
         print()
         print(" OPOZORILO: vse obstoječe tabele in podatki bodo POBRISANI.")
@@ -51,8 +51,8 @@ def main() -> int:
             repo.izvedi_sql_datoteko(PRAVICE_SQL)
             print("      Pravice so podeljene.")
         except Exception as e:
-            # Na tuji bazi ali lokalnem Postgresu uporabnika jurekr/javnost
-            # morda ni – to ni usodno, shema je že narejena.
+            # Uporabnika jurekr/javnost morda ni (tuja baza, lokalni
+            # Postgres) - shema je kljub temu že narejena.
             repo.conn.rollback()
             print(f"      OPOZORILO: pravic ni bilo mogoče podeliti: {e}")
             print("      (Shema je kljub temu ustvarjena.)")

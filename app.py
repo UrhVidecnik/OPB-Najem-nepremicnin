@@ -1,7 +1,6 @@
-"""Spletna aplikacija (Bottle): poti, obrazci in preverjanje dostopa.
-
+"""
+Spletna aplikacija
 Zagon: python app.py, nato odpri http://localhost:8080
-app.py ne piše SQL - vse gre prek Services in Data/repository.py.
 """
 
 import os
@@ -37,9 +36,7 @@ auth = AuthService()
 
 
 # Dostop: neprijavljen lahko brska in gleda statistiko, prijavljen uporabnik
-# lahko dodaja oglase, admin pa jih lahko tudi ureja in briše.
-# Predloge gumbe sicer skrijejo, a to ni zaščita – naslov lahko kdorkoli
-# vtipka neposredno v brskalnik, zato dostop preverimo še tu.
+# lahko dodaja oglase, admin pa jih lahko tudi ureja in briše
 
 def prijavljeni_uporabnik():
     """Vrne uporabniško ime iz PODPISANEGA piškotka (ali None)."""
@@ -63,8 +60,8 @@ def zahtevaj_prijavo(f):
 def zahtevaj_admina(f):
     """Stran je dostopna samo adminom.
 
-    Vloge ne beremo iz piškotka, ampak jo preverimo v bazi – piškotek je pri
-    uporabniku, tabela `uporabnik` pa je edini vir resnice o tem, kdo je admin.
+    Vlogo preverimo v bazi, ne v piškotku - tabela `uporabnik` je edini
+    vir resnice o tem, kdo je admin.
     """
     @wraps(f)
     def ovita(*args, **kwargs):
@@ -89,8 +86,7 @@ def zahtevaj_pisalni_dostop(f):
     """Dejanje potrebuje pravici UPDATE/DELETE v bazi.
 
     Kadar aplikacija teče prek javnega dostopa ('javnost'), baza urejanja
-    in brisanja ne dovoli. Namesto nerazumljive napake iz PostgreSQL
-    uporabniku pokažemo jasno razlago.
+    in brisanja ne dovoli.
     """
     @wraps(f)
     def ovita(*args, **kwargs):
@@ -119,7 +115,7 @@ def staticne_datoteke(filepath):
 
 @get("/")
 def domaca_stran():
-    """Pregled: nekaj številk in najdražji/najcenejši oglasi."""
+    """Pregled: nekaj statistike in najdražji/najcenejši oglasi."""
     statistika = service.statistika()
     izbor = service.najdrazji_najcenejsi(koliko=5)
     po_regijah = service.statistika_po_regijah(min_oglasov=10)[:8]
@@ -140,17 +136,11 @@ def domaca_stran():
 @get("/oglasi")
 def seznam_oglasov():
     """Glavna stran aplikacije: filtriranje in brskanje po oglasih."""
-    # 1) Iz parametrov URL-ja sestavimo filtre (Service poskrbi za pretvorbe).
     filtri = service.sestavi_filtre(request.query)
-
-    # 2) Katero stran hoče uporabnik.
     stran = Service.v_int(request.query.get("stran")) or 1
     na_stran = Service.v_int(request.query.get("na_stran")) or PRIVZETO_NA_STRAN
-
-    # 3) Podatke poberemo iz baze.
     rezultat = service.stran_oglasov(filtri, stran=stran, na_stran=na_stran)
 
-    # 4) Šifranti za spustne sezname v obrazcu.
     return template_uporabnik(
         "oglasi.html",
         rezultat=rezultat,
@@ -175,7 +165,6 @@ def podrobnosti_oglasa(id_oglasa):
             sporocilo=f"Oglasa s številko {id_oglasa} ni v bazi.",
         )
 
-    # Podobni oglasi: ista regija, cena ±30 % (izbor sestavi Service).
     return template_uporabnik("oglas.html", o=oglas,
                               podobni=service.podobni_oglasi(oglas))
 
@@ -192,8 +181,7 @@ def stran_statistika():
     po_vrstah = service.statistika_po_vrstah(filtri)
     histogram = service.porazdelitev_cen(filtri, sirina_razreda=250)
 
-    # Za stolpčni diagram v HTML potrebujemo najvišji stolpec,
-    # da lahko višine izrazimo v odstotkih.
+    # Najvišji stolpec potrebujemo, da lahko višine v HTML izrazimo v %.
     najvecji = max((h["stevilo"] for h in histogram), default=1)
 
     return template_uporabnik(
@@ -228,9 +216,9 @@ def shrani_nov_oglas():
     """Sprejme oddani obrazec in shrani nov oglas."""
     f = request.forms
 
-    # Pozor: redirect() vrže izjemo HTTPResponse. Če bi ga klicali znotraj
-    # try/except, bi ga except ujel in namesto preusmeritve prikazal napako.
-    # Zato tu samo shranimo, preusmerimo pa šele za blokom.
+    # redirect() vrže izjemo HTTPResponse - če bi bil znotraj try/except,
+    # bi ga except ujel namesto preusmeritve. Zato shranimo tu, preusmerimo
+    # šele za blokom
     nov_id = None
     try:
         nov = service.dodaj_oglas(
@@ -252,8 +240,7 @@ def shrani_nov_oglas():
         nov_id = nov.oglas.id_oglasa
 
     except ValueError as e:
-        # Napako pokažemo nad obrazcem in vrnemo ŽE VPISANE podatke,
-        # da uporabniku ni treba vsega tipkati znova.
+        # Vrnemo že vpisane podatke, da uporabniku ni treba tipkati znova.
         return template_uporabnik(
             "dodaj_oglas.html",
             vrste=service.vrste(), regije=service.regije(), viri=service.viri(),
@@ -267,8 +254,7 @@ def shrani_nov_oglas():
             napaka=f"Napaka pri shranjevanju: {e}", podatki=dict(f.decode()),
         )
 
-    # Vzorec POST -> Redirect -> GET: brez preusmeritve bi osvežitev strani
-    # (F5) oglas vnesla še enkrat.
+    # POST -> Redirect -> GET: brez tega bi F5 oglas vnesel še enkrat.
     redirect(url(f"/oglas/{nov_id}"))
 
 
@@ -314,7 +300,6 @@ def shrani_urejen_oglas(id_oglasa):
             "uredi_oglas.html", o=service.dobi_oglas(id_oglasa),
             napaka=f"Napaka pri shranjevanju: {e}")
 
-    # redirect() šele zunaj try (glej razlago pri /dodaj).
     redirect(url(f"/oglas/{id_oglasa}"))
 
 
@@ -336,7 +321,6 @@ def izbrisi_oglas(id_oglasa):
             sporocilo=f"Oglasa ni bilo mogoče izbrisati: {e}",
         )
 
-    # redirect() šele zunaj try (glej razlago pri /dodaj).
     redirect(url("/oglasi"))
 
 
@@ -366,9 +350,8 @@ def izvedi_prijavo():
     nastavi_piskotek("uporabnik", uporabnik.uporabnisko_ime)
     nastavi_piskotek("vloga", uporabnik.vloga)
 
-    # Preusmerimo samo na NAŠO stran. Sam startswith("/") ne zadošča:
-    # "//zlonamerna.si/" se začne z "/", brskalnik pa ga razume kot
-    # absoluten naslov in bi uporabnika odnesel s strani.
+    # "//zlonamerna.si/" se začne z "/", a brskalnik ga razume kot
+    # absoluten naslov - zato ne zadošča le startswith("/").
     varna = naslednja if (naslednja and naslednja.startswith("/")
                           and not naslednja.startswith("//")) else "/"
     redirect(url(varna))
@@ -396,7 +379,6 @@ def izvedi_registracijo():
         return template("registracija.html", uporabnik=None, vloga=None,
                         napaka=f"Registracija ni uspela: {e}", vpisano_ime=ime or "")
 
-    # Po uspešni registraciji uporabnika kar prijavimo.
     # Nov uporabnik ima VEDNO vlogo 'uporabnik' – skrbnika lahko določi
     # samo lastnik baze s skripto nastavi_admina.py.
     nastavi_piskotek("uporabnik", ime.strip())
