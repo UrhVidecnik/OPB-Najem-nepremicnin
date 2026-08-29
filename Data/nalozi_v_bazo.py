@@ -30,8 +30,7 @@ IME_VIRA = "nepremicnine.net"
 URL_VIRA = "https://www.nepremicnine.net"
 
 # Meje razumnosti. Vrstice zunaj teh mej so skoraj zagotovo napaka na portalu
-# (npr. cena 2 € ali 26.000 m² stanovanje) – v bazo jih ne spustimo,
-# ker bi popačile vso statistiko.
+# (npr. cena 2 € ali 26.000 m² stanovanje)
 MIN_CENA, MAX_CENA = 50.0, 50_000.0
 MIN_M2, MAX_M2 = 5.0, 2_000.0
 MIN_LETO, MAX_LETO = 1200, date.today().year + 5
@@ -41,50 +40,42 @@ MIN_LETO, MAX_LETO = 1200, date.today().year + 5
 csv.field_size_limit(10_000_000)
 
 
-# nepremicnine.net oglašuje tudi hrvaške nepremičnine. Imena regij so pri obojih
-# zapisana v slovenščini ("Splitsko-dalmatinska", "Mesto Zagreb"), povezava do
-# oglasa pa države ne označuje, zato je edini razpoznavni znak ime regije.
-# Seznama zajameta vseh 27 imen iz oglasi_full.csv (1428 SI + 1244 HR + 18 brez
-# regije). Če uvoz javi neznano regijo, jo dodaj v ustrezen seznam z malimi
-# črkami.
 
 SLOVENSKE_REGIJE = {
-    # 12 statističnih regij + ločeni Ljubljana mesto/okolica, kot jih
-    # uporablja portal
-    "lj-mesto",         # 680 oglasov
-    "podravska",        # 164
-    "j. primorska",     # 129  (Južna Primorska – Obala, Koper, Izola ...)
-    "lj-okolica",       # 120
-    "savinjska",        # 100
-    "gorenjska",        #  92
-    "dolenjska",        #  41
-    "s.primorska",      #  28  (Severna Primorska – Goriška)
-    "koroška",          #  25
-    "posavska",         #  18
-    "pomurska",         #  15
-    "notranjska",       #   8
-    "zasavska",         #   8
+    # 12 statističnih regij + ločeni Ljubljana mesto/okolica
+    "lj-mesto",         
+    "podravska",        
+    "j. primorska",     #  (Južna Primorska)
+    "lj-okolica",      
+    "savinjska",        
+    "gorenjska",        
+    "dolenjska",        
+    "s.primorska",      #  (Severna Primorska – Goriška)
+    "koroška",          
+    "posavska",         
+    "pomurska",         
+    "notranjska",       
+    "zasavska",         
     # različice zapisa, če se portal kdaj premisli
     "ljubljana mesto", "ljubljana okolica", "osrednjeslovenska",
     "obalno-kraška", "goriška", "jugovzhodna slovenija", "primorsko-notranjska",
 }
 
 HRVASKE_REGIJE = {
-    # hrvaške županije, zapisane v slovenščini
-    "mesto zagreb",             # 674 oglasov
-    "primorsko-goranska",       # 317
-    "splitsko-dalmatinska",     # 102
-    "zagrebška",                #  52
-    "istrska",                  #  45
-    "osiješko-baranjska",       #  17
-    "zadarska",                 #  12
-    "varaždinska",              #   8
-    "karlovška",                #   7
-    "šibeniško-kninska",        #   4
-    "liško-senjska",            #   3
-    "međimurska",               #   1
-    "dubrovniško-neretvanska",  #   1
-    "brodsko-posavska",         #   1
+    "mesto zagreb",             
+    "primorsko-goranska",       
+    "splitsko-dalmatinska",     
+    "zagrebška",                
+    "istrska",                  
+    "osiješko-baranjska",       
+    "zadarska",                 
+    "varaždinska",              
+    "karlovška",                
+    "šibeniško-kninska",        
+    "liško-senjska",            
+    "međimurska",               
+    "dubrovniško-neretvanska",  
+    "brodsko-posavska",         
     # preostale hrvaške županije, ki se v tem zajemu niso pojavile
     "krapinsko-zagorska", "sisaško-moslavaška", "koprivniško-križevška",
     "bjelovarsko-bilogorska", "virovitiško-podravska", "požeško-slavonska",
@@ -185,7 +176,6 @@ def uvozi(pot_csv: str, suho: bool = False, omejitev: Optional[int] = None) -> i
         print(" Ustvari Data/auth.py s svojimi podatki. Za preizkus uporabi --suho.")
         return 1
 
-    # 1) Preberemo CSV v pomnilnik (2700 vrstic je za pomnilnik zanemarljivo).
     with open(pot_csv, "r", encoding="utf-8", newline="") as f:
         vrstice = list(csv.DictReader(f))
 
@@ -195,7 +185,7 @@ def uvozi(pot_csv: str, suho: bool = False, omejitev: Optional[int] = None) -> i
 
     repo = Repository()
 
-    # Števci za končno poročilo.
+    # Števci za končno poročilo
     stat = Counter()
     neznane_regije = Counter()
     primeri_napak = []
